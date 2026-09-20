@@ -1,0 +1,73 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local secrets and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials*.json
+secrets*.json
+
+# Logs and temporary files
+*.log
+logs/
+tmp/
+temp/
+.cache/
+
+# Local Micro-C / Hi-C source data
+micro-c数据/
+*.mcool
+*.cool
+*.hic
+*.tar
+*.tar.gz
+*.fastq
+*.fastq.gz
+*.bam
+*.cram
+
+# Generated numerical arrays and trained models
+*.npy
+*.npz
+*.pth
+*.pt
+*.ckpt
+
+# Generated data products and internal execution state
+project/data/processed/
+project/.superpowers/
+results/
+figures/
+
+# Generated outputs: retain only compact, reviewable Task 1 summaries
+project/outputs/*
+!project/outputs/task1/
+project/outputs/task1/*
+!project/outputs/task1/task1_summary.md
+!project/outputs/task1/task1_manifest.json
+!project/outputs/task1/input_comparison.csv
+!project/outputs/task1/split_summary.csv
+!project/outputs/task1/split_diagnostics.json
+!project/outputs/task1/replicate_consistency_summary.csv

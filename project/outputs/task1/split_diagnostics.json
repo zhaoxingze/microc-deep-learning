@@ -1,0 +1,64 @@
+{
+  "structures": 344,
+  "genomic_groups": 175,
+  "mixed_class_groups": 39,
+  "largest_group_size": 12,
+  "leakage": {
+    "train_val": [],
+    "train_test": [],
+    "val_test": []
+  },
+  "summary": [
+    {
+      "split": "train",
+      "CHIN": 175,
+      "OPCID": 48,
+      "CHID": 18,
+      "total": 241,
+      "groups": 115,
+      "actual_ratio": 0.7005813953488372,
+      "target_ratio": 0.7,
+      "ratio_deviation": 0.000581395348837277,
+      "CHIN_ratio": 0.7,
+      "CHIN_ratio_deviation": 0.0,
+      "OPCID_ratio": 0.7058823529411765,
+      "OPCID_ratio_deviation": 0.005882352941176561,
+      "CHID_ratio": 0.6923076923076923,
+      "CHID_ratio_deviation": -0.007692307692307665
+    },
+    {
+      "split": "val",
+      "CHIN": 38,
+      "OPCID": 10,
+      "CHID": 4,
+      "total": 52,
+      "groups": 31,
+      "actual_ratio": 0.1511627906976744,
+      "target_ratio": 0.15,
+      "ratio_deviation": 0.0011627906976744151,
+      "CHIN_ratio": 0.152,
+      "CHIN_ratio_deviation": 0.0020000000000000018,
+      "OPCID_ratio": 0.14705882352941177,
+      "OPCID_ratio_deviation": -0.002941176470588225,
+      "CHID_ratio": 0.15384615384615385,
+      "CHID_ratio_deviation": 0.0038461538461538602
+    },
+    {
+      "split": "test",
+      "CHIN": 37,
+      "OPCID": 10,
+      "CHID": 4,
+      "total": 51,
+      "groups": 29,
+      "actual_ratio": 0.14825581395348839,
+      "target_ratio": 0.15,
+      "ratio_deviation": -0.0017441860465116088,
+      "CHIN_ratio": 0.148,
+      "CHIN_ratio_deviation": -0.0020000000000000018,
+      "OPCID_ratio": 0.14705882352941177,
+      "OPCID_ratio_deviation": -0.002941176470588225,
+      "CHID_ratio": 0.15384615384615385,
+      "CHID_ratio_deviation": 0.0038461538461538602
+    }
+  ]
+}

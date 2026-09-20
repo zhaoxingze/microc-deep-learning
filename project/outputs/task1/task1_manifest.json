@@ -1,0 +1,110 @@
+{
+  "task": "Task 1: supervised CHIN/OPCID/CHID recognition and interpretation",
+  "seed": 20260920,
+  "hashes": {
+    "structures_csv_sha256": "8ae5e792482a06a32a3fa85705505e5bbc1cf5957b0fca78ccee8e09bd51d7a6",
+    "group_split_csv_sha256": "bd74adc1173b105ada7caefe8abe7389db15b535ad0750a80318464290e9c0c8",
+    "rep1_cool_sha256": "0256e10da36abfe0238bf16952bc43bc78365f43c201e6e3ba0c49bd243549a8",
+    "rep2_cool_sha256": "ede9b4f7c0c6b40c8f098e43cdd0abbc0a8987f05e8b37051a5e3cbf143ad106",
+    "selected_checkpoint_sha256": "3355bee0cf28754a055b83e48dd39727b03eae557073e2755d55f5dc8c28233d"
+  },
+  "data": {
+    "structures": 344,
+    "window_bp": 6400,
+    "source_bin_size": 10,
+    "target_bin_size": 100,
+    "genomic_group_definition": "connected components of overlapping 6.4 kb genomic intervals; endpoint-only touching is not overlap"
+  },
+  "milp": {
+    "solver": "scipy.optimize.milp",
+    "hard_constraints": [
+      "one split per genomic group",
+      "all three classes represented in every split"
+    ],
+    "soft_objective": "absolute deviations from 70/15/15 total and per-class structure counts, with Val/Test CHID protection",
+    "mixed_class_groups": 39,
+    "largest_group_size": 12,
+    "leakage": {
+      "train_val": [],
+      "train_test": [],
+      "val_test": []
+    }
+  },
+  "splits": {
+    "train": {
+      "groups": 115,
+      "structures": 241,
+      "class_counts": {
+        "CHIN": 175,
+        "OPCID": 48,
+        "CHID": 18
+      },
+      "actual_ratio": 0.7005813953488372
+    },
+    "val": {
+      "groups": 31,
+      "structures": 52,
+      "class_counts": {
+        "CHIN": 38,
+        "OPCID": 10,
+        "CHID": 4
+      },
+      "actual_ratio": 0.1511627906976744
+    },
+    "test": {
+      "groups": 29,
+      "structures": 51,
+      "class_counts": {
+        "CHIN": 37,
+        "OPCID": 10,
+        "CHID": 4
+      },
+      "actual_ratio": 0.1482558139534883
+    }
+  },
+  "selected_input_type": "raw",
+  "selection_basis": "Validation structure-level Macro-F1; lower structure-level CE breaks ties",
+  "model_architecture": "Conv(1,32)-BN-ReLU-Pool; Conv(32,64)-BN-ReLU-Pool; Conv(64,128)-BN-ReLU; AdaptiveAvgPool; Linear(128,64)-ReLU-Dropout; Linear(64,3); logits only",
+  "training": {
+    "optimizer": "AdamW",
+    "learning_rate": 0.001,
+    "batch_size": 32,
+    "epochs_requested": 60,
+    "patience": 10,
+    "class_weights_from_train_unique_structures": [
+      0.4590476155281067,
+      1.6736111640930176,
+      4.462963104248047
+    ],
+    "best_epoch": 18,
+    "best_validation_structure_macro_f1": 0.673015873015873
+  },
+  "final_test_structure_level_metrics": {
+    "accuracy": 0.7254901960784313,
+    "macro_precision": 0.6800705467372135,
+    "macro_recall": 0.7752252252252253,
+    "macro_f1": 0.6715277777777778,
+    "weighted_f1": 0.7694035947712419,
+    "n_samples": 51.0,
+    "CHIN_precision": 0.9259259259259259,
+    "CHIN_recall": 0.6756756756756757,
+    "CHIN_f1": 0.78125,
+    "OPCID_precision": 0.9,
+    "OPCID_recall": 0.9,
+    "OPCID_f1": 0.9,
+    "CHID_precision": 0.21428571428571427,
+    "CHID_recall": 0.75,
+    "CHID_f1": 0.3333333333333333,
+    "structure_loss": 0.5441049933433533,
+    "n_structures": 51.0,
+    "n_replicates": 102.0
+  },
+  "environment": {
+    "python": "3.12.10",
+    "pytorch": "2.14.0+cpu",
+    "numpy": "2.4.4",
+    "scipy": "1.18.1",
+    "sklearn": "1.9.0",
+    "device": "cpu"
+  }
+}
