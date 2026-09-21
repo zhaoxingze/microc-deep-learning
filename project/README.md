@@ -25,7 +25,9 @@ python scripts\check_cool_files.py
 python scripts\find_structure_annotations.py
 python scripts\build_known_structure_dataset.py --cool-path "F:\Micro-C\micro-c数据\GSE272159_37C_rep1.mapq_30.10.cool"
 python scripts\qc_known_structures.py
-python scripts\build_paired_known_dataset.py
+python scripts\build_paired_known_dataset.py `
+  --rep1-cool "F:\Micro-C\micro-c数据\GSE272159_37C_rep1.mapq_30.10.cool" `
+  --rep2-cool "F:\Micro-C\micro-c数据\GSE272159_37C_rep2.mapq_30.10.cool"
 python scripts\build_group_split.py
 python scripts\run_task1_experiments.py
 python scripts\analyze_replicate_consistency.py
@@ -38,6 +40,66 @@ pytest -q
 ```
 
 不带 `--cool-path` 运行构建脚本时，只有文件名中明确包含 `WT` 且唯一匹配 rep1 才会自动选择；否则脚本会列出候选并停止。
+
+## One-click Task 1 Reproduction
+
+推荐创建独立的 Python 3.11 环境，并从项目根目录执行：
+
+```powershell
+conda create -n microc python=3.11 -y
+conda activate microc
+cd F:\Micro-C\project
+python -m pip install -r requirements.txt
+python -m pytest -q
+```
+
+Windows 一键入口：
+
+```powershell
+# 快速完整链路验证；默认也是 smoke
+.\run_all.ps1 -Mode smoke
+
+# 正式实验；沿用训练脚本的正式 epochs/patience 默认值
+.\run_all.ps1 -Mode full
+
+# 保守复用已经通过严格校验的确定性数据阶段
+.\run_all.ps1 -Mode full -Resume
+
+# 只检查环境并打印完整命令，不执行科学流水线、不创建日志或实验产物
+.\run_all.ps1 -Mode full -DryRun
+
+# 仅在明确需要时跳过首尾 pytest
+.\run_all.ps1 -Mode smoke -SkipTests
+```
+
+跨平台 Python 入口：
+
+```text
+python scripts/run_all.py --mode smoke
+python scripts/run_all.py --mode full
+python scripts/run_all.py --mode full --resume
+python scripts/run_all.py --mode full --dry-run
+python scripts/run_all.py --mode smoke --skip-tests
+```
+
+如果 PowerShell 提示禁止运行脚本，可仅为当前进程放宽策略：
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\run_all.ps1 -Mode smoke
+```
+
+也可以不改变当前 shell 策略，直接使用：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\run_all.ps1 -Mode smoke
+```
+
+Smoke 会完整执行数据、split、3 输入 CNN、辅助分析、Grad-CAM、zero-axis、finalize 和测试，但两次训练固定为 `--epochs 3 --patience 2`。其全部科学产物隔离在 `outputs/pipeline_runs/smoke/`，不会覆盖 `data/processed/`、`data/splits/` 或 `outputs/task1/` 的正式结果；运行日志统一写入 `outputs/logs/run_all_*.log`。
+
+**Smoke results must NOT be used for final scientific reporting.** 正式结论只能来自 Full 实验。
+
+`-Resume` / `--resume` 只可能跳过 structures、rep1 基础数据、QC、paired 数据和 group split，且必须先通过内容、shape、metadata 对齐及 genomic-group leakage 校验。训练、replicate consistency、brightness baseline、Grad-CAM、zero-axis 和 finalize 始终重跑。
 
 ## 实现约定
 
