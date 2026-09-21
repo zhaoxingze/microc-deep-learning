@@ -68,4 +68,3 @@ def test_blocked_split_requires_two_eligible_blocks() -> None:
     )
     with pytest.raises(ValueError, match="two eligible genomic blocks"):
         blocked_background_split(windows, block_bp=10_000)
-

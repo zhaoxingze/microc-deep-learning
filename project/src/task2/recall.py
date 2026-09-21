@@ -196,4 +196,3 @@ def score_ablation(
         table.insert(0, "method", method)
         tables.append(table)
     return pd.concat(tables, ignore_index=True)
-

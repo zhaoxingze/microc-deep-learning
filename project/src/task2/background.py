@@ -109,4 +109,3 @@ def assert_no_background_overlap(split: pd.DataFrame) -> None:
                 raise ValueError(
                     f"background train/val overlap leakage at {chrom}:{train_row.start}-{train_row.end}"
                 )
-

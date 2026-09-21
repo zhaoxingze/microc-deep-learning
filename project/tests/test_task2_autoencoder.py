@@ -58,4 +58,3 @@ def test_train_autoencoder_writes_background_validation_checkpoint(tmp_path: Pat
     assert (tmp_path / "training_history.csv").is_file()
     assert result.best_epoch >= 1
     assert "val_loss" in result.history
-

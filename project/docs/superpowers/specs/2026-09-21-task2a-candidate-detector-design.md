@@ -104,4 +104,3 @@ Every window records zero-axis status in both replicates. The summary reports th
 `python scripts/run_task2a.py --mode {smoke,full}` is the single entry point. `--dry-run` validates inputs and prints the plan without creating scientific artifacts. `--resume` skips only scan/expected/background stages after structural validation; AE training, scoring, recall evaluation, plots, manifest, and summary rerun.
 
 Any exception fails fast, is written to the log, and prevents later stages. CLI errors identify the log path. No dependency is installed automatically.
-

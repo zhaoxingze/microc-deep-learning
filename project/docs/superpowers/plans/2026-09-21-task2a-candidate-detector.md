@@ -157,4 +157,3 @@
 - [ ] Recompute protected hashes; expect exact equality and all Task 2A smoke artifacts below the isolated root.
 - [ ] Run final compile, full pytest, full dry-run, and `git diff --check`; expect success.
 - [ ] Commit integration fixes as `fix: harden task2a smoke pipeline` only if needed.
-

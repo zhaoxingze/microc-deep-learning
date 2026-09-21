@@ -85,7 +85,6 @@ def compute_genome_expected(
         chunks(), n_target_bins=n_target_bins, max_distance_bins=max_distance_bins
     )
 
-
 def apply_expected(matrix: np.ndarray, expected: np.ndarray) -> np.ndarray:
     array = np.asarray(matrix, dtype=np.float64)
     vector = np.asarray(expected, dtype=np.float64)
@@ -101,4 +100,3 @@ def apply_expected(matrix: np.ndarray, expected: np.ndarray) -> np.ndarray:
         out=np.zeros_like(array, dtype=np.float64),
         where=denominators > 0,
     )
-

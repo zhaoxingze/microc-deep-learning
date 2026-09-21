@@ -144,4 +144,3 @@ def scan_replicates(
     metadata = pd.DataFrame(metadata_rows)
     metadata.to_csv(root / "genome_windows_metadata.csv", index=False, encoding="utf-8-sig")
     return metadata
-

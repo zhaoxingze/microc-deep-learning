@@ -249,4 +249,3 @@ def score_reconstruction(
                 )
             offset += len(inputs)
     return pd.DataFrame(rows)
-
