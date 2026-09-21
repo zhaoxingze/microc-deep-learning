@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import importlib.util
 import json
 import sys
 from pathlib import Path
@@ -349,3 +350,50 @@ def test_logger_writes_utf8_to_terminal_and_file(tmp_path: Path, capsys) -> None
 
     assert "中文日志" in capsys.readouterr().out
     assert log_path.read_text(encoding="utf-8") == "中文日志\n"
+
+
+def load_run_all_module():
+    script = Path(__file__).resolve().parents[1] / "scripts" / "run_all.py"
+    spec = importlib.util.spec_from_file_location("task1_run_all", script)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_cli_defaults_to_smoke_mode() -> None:
+    module = load_run_all_module()
+    args = module.parse_args([])
+    assert args.mode == "smoke"
+    assert args.skip_tests is False
+    assert args.dry_run is False
+    assert args.resume is False
+
+
+def test_cli_parses_full_and_control_flags() -> None:
+    module = load_run_all_module()
+    args = module.parse_args(["--mode", "full", "--skip-tests", "--dry-run", "--resume"])
+    assert (args.mode, args.skip_tests, args.dry_run, args.resume) == (
+        "full",
+        True,
+        True,
+        True,
+    )
+
+
+def test_cli_rejects_invalid_mode() -> None:
+    module = load_run_all_module()
+    with pytest.raises(SystemExit):
+        module.parse_args(["--mode", "abc"])
+
+
+def test_powershell_wrapper_maps_only_pipeline_flags() -> None:
+    wrapper = (Path(__file__).resolve().parents[1] / "run_all.ps1").read_text(encoding="utf-8")
+    for flag in ("--mode", "--skip-tests", "--dry-run", "--resume"):
+        assert flag in wrapper
+    for scientific_script in (
+        "build_known_structure_dataset.py",
+        "run_task1_experiments.py",
+        "train_task1.py",
+    ):
+        assert scientific_script not in wrapper
