@@ -37,6 +37,16 @@ def test_shape_preprocessing_zero_mad_and_nonfinite_values_remain_finite() -> No
     assert float(np.max(np.abs(transformed))) < 10.0
 
 
+def test_shape_preprocessing_winsorizes_near_zero_mad_outliers() -> None:
+    raw = np.full((6, 6), 10.0)
+    for index, (row, column) in enumerate(((0, 3), (0, 4), (0, 5), (1, 4), (1, 5), (2, 5))):
+        raw[row, column] = 1.0 if index % 2 else 1.001
+
+    transformed = preprocess_shape_window(raw, np.ones(6), clip_value=10.0)
+
+    assert float(np.max(np.abs(transformed))) <= 10.0
+
+
 def test_clip_fitting_uses_only_background_train_rows(tmp_path: Path) -> None:
     paths = {}
     for replicate in ("rep1", "rep2"):

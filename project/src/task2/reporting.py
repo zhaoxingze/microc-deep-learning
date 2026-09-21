@@ -368,7 +368,7 @@ def write_refined_summary(
         "2. **Old Full issue:** the legacy paired branches had "
         f"Pearson {old_pearson:.6f} and Spearman {old_spearman:.6f}.",
         "3. **Why mean is unsuitable:** the scientific target is Density anomaly OR Shape anomaly; a negative branch must not cancel a positive branch.",
-        "4. **Shape normalization:** genome O/E → background-train clip → log1p → per-window valid-pixel median/MAD normalization.",
+        "4. **Shape normalization:** genome O/E → background-train clip → log1p → per-window valid-pixel median/MAD normalization → fixed [-10, 10] winsorization.",
         "5. **Does AE focus more on shape?** This is diagnosed, not assumed, by the branch-correlation change and the separate Shape-only recall.",
         f"6. **Correlation change:** refined Pearson {refined_pearson:.6f}; refined Spearman {refined_spearman:.6f}.",
         f"7. **OR-Max Top-20% recall:** {metric('or_max', 'overall_recall')}.",

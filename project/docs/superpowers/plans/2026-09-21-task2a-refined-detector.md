@@ -14,7 +14,7 @@
 
 - Do not modify Task 1 code, Task 1 results, raw Cooler files, or legacy `outputs/task2a/` results.
 - Keep window geometry, Expected(d), exclusion, blocked split, recall, zero-axis, and region merge definitions fixed.
-- Use background-train-only per-replicate 99.5th-percentile O/E clipping and `oe_log_robust` normalization.
+- Use background-train-only per-replicate 99.5th-percentile O/E clipping, `oe_log_robust` normalization, unit scale for MAD ≤ 1e-8, and fixed normalized winsorization to [-10, 10].
 - Apply fixed MEAN, OR_MAX, and POSITIVE_SUM rules without recall-based tuning; OR_MAX is primary.
 - Select the AutoEncoder checkpoint from background validation loss only; Full maximum epochs 120, patience 15.
 - Run at least 100 reproducible window-count and coverage-matched random repetitions.

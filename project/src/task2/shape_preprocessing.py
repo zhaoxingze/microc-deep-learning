@@ -26,11 +26,14 @@ def preprocess_shape_window(
     *,
     exclude_band: int = 2,
     eps: float = 1e-8,
+    normalized_clip: float = 10.0,
 ) -> np.ndarray:
     if not np.isfinite(clip_value) or clip_value <= 0:
         raise ValueError("O/E clip value must be finite and positive")
     if eps <= 0:
         raise ValueError("normalization epsilon must be positive")
+    if not np.isfinite(normalized_clip) or normalized_clip <= 0:
+        raise ValueError("normalized shape clip must be finite and positive")
     oe = apply_expected(raw, expected)
     finite = np.nan_to_num(oe, nan=0.0, posinf=clip_value, neginf=0.0)
     logged = np.log1p(np.clip(finite, 0.0, clip_value))
@@ -43,7 +46,8 @@ def preprocess_shape_window(
     if mad <= eps:
         scale = 1.0
     normalized = (logged - median) / scale
-    return np.nan_to_num(normalized, nan=0.0, posinf=0.0, neginf=0.0).astype(np.float32)
+    normalized = np.nan_to_num(normalized, nan=0.0, posinf=normalized_clip, neginf=-normalized_clip)
+    return np.clip(normalized, -normalized_clip, normalized_clip).astype(np.float32)
 
 
 def fit_background_oe_clips(

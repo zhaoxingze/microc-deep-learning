@@ -34,7 +34,10 @@ The AutoEncoder shape branch uses a fixed representation:
 5. Within each window, estimate median and MAD from the same valid pixels and
    transform the whole 64×64 matrix as
    `(X - median_valid) / (1.4826 * MAD_valid + 1e-8)`.
-6. Replace any remaining non-finite value with zero.
+6. Use unit scale when `MAD <= 1e-8`, then winsorize the normalized matrix to
+   the fixed range `[-10, 10]` so sparse near-zero-MAD windows cannot dominate
+   the MSE objective. This parameter is fixed before recall evaluation.
+7. Replace any remaining non-finite value with zero.
 
 The manifest names this mode `oe_log_robust`, records the percentile, source,
 replicate clip values, normalization formula, and epsilon. The existing

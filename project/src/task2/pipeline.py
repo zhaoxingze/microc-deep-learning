@@ -227,6 +227,7 @@ def refined_manifest_configuration(
         "oe_clip_percentile": 99.5,
         "oe_clip_values": dict(clip_values),
         "per_window_normalization": "(log1p(clipped_oe)-median_valid)/(1.4826*MAD_valid+1e-8)",
+        "shape_normalized_clip": [-10.0, 10.0],
         "epochs": config.epochs,
         "patience": config.patience,
         "best_epoch": best_epoch,
