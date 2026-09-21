@@ -41,6 +41,26 @@ def test_window_dataset_applies_log1p_and_uses_replicate_array(tmp_path: Path) -
     np.testing.assert_allclose(dataset[1]["matrix"].numpy(), np.log(9.0))
 
 
+def test_window_dataset_supports_shape_normalized_genome_oe(tmp_path: Path) -> None:
+    path = tmp_path / "rep1.npy"
+    matrix = np.arange(25, dtype=np.float32).reshape(1, 1, 5, 5)
+    np.save(path, matrix)
+    rows = pd.DataFrame(
+        {"replicate": ["rep1"], "array_index": [0], "window_id": ["w"]}
+    )
+    dataset = WindowDataset(
+        rows,
+        {"rep1": path},
+        input_type="oe_log_robust",
+        expected={"rep1": np.ones(5)},
+        oe_clip_values={"rep1": 20.0},
+    )
+
+    output = dataset[0]["matrix"].numpy()
+    assert output.shape == (1, 5, 5)
+    assert np.isfinite(output).all()
+
+
 def test_train_autoencoder_writes_background_validation_checkpoint(tmp_path: Path) -> None:
     train = TensorDataset(torch.zeros((2, 1, 64, 64)))
     val = TensorDataset(torch.zeros((2, 1, 64, 64)))

@@ -14,6 +14,7 @@ from torch.utils.data import DataLoader, Dataset
 
 from src.task1.trainer import set_reproducible_seed
 from src.task2.expected import apply_expected
+from src.task2.shape_preprocessing import preprocess_shape_window
 
 
 class BackgroundAutoencoder(nn.Module):
@@ -51,9 +52,10 @@ class WindowDataset(Dataset):
         *,
         input_type: str = "log1p",
         expected: Mapping[str, np.ndarray] | None = None,
+        oe_clip_values: Mapping[str, float] | None = None,
     ) -> None:
-        if input_type not in {"log1p", "genome_oe"}:
-            raise ValueError("input_type must be log1p or genome_oe")
+        if input_type not in {"log1p", "genome_oe", "oe_log_robust"}:
+            raise ValueError("input_type must be log1p, genome_oe, or oe_log_robust")
         required = {"replicate", "array_index", "window_id"}
         if not required.issubset(rows.columns):
             raise ValueError("dataset rows are incomplete")
@@ -64,8 +66,11 @@ class WindowDataset(Dataset):
         }
         self.input_type = input_type
         self.expected = expected
-        if input_type == "genome_oe" and expected is None:
-            raise ValueError("genome_oe input requires replicate expected vectors")
+        self.oe_clip_values = oe_clip_values
+        if input_type in {"genome_oe", "oe_log_robust"} and expected is None:
+            raise ValueError(f"{input_type} input requires replicate expected vectors")
+        if input_type == "oe_log_robust" and oe_clip_values is None:
+            raise ValueError("oe_log_robust input requires replicate O/E clip values")
 
     def __len__(self) -> int:
         return len(self.rows)
@@ -78,9 +83,14 @@ class WindowDataset(Dataset):
         )
         if self.input_type == "log1p":
             transformed = np.log1p(matrix).astype(np.float32)
-        else:
+        elif self.input_type == "genome_oe":
             assert self.expected is not None
             transformed = apply_expected(matrix, self.expected[replicate]).astype(np.float32)
+        else:
+            assert self.expected is not None and self.oe_clip_values is not None
+            transformed = preprocess_shape_window(
+                matrix, self.expected[replicate], self.oe_clip_values[replicate]
+            )
         return {
             "matrix": torch.from_numpy(transformed[np.newaxis, :, :].copy()),
             "window_id": str(row["window_id"]),
