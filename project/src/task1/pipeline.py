@@ -5,7 +5,7 @@ from __future__ import annotations
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Literal
+from typing import Callable, Literal
 
 
 INPUT_TYPES = ("raw", "log1p", "oe")
@@ -296,3 +296,220 @@ def read_validation_selected_input(path: str | Path) -> str:
     if input_type not in INPUT_TYPES:
         raise PipelineValidationError(f"Selected invalid input type: {input_type!r}")
     return input_type
+
+
+def _require_file(path: Path) -> Path:
+    if not path.is_file():
+        raise PipelineValidationError(f"Required artifact is missing: {path}")
+    return path
+
+
+def _require_columns(frame: object, columns: set[str], label: str) -> None:
+    available = set(getattr(frame, "columns", ()))
+    missing = columns - available
+    if missing:
+        raise PipelineValidationError(
+            f"{label} is missing required columns: {', '.join(sorted(missing))}"
+        )
+
+
+def _load_window_arrays(root: Path) -> tuple[dict[str, object], object, object]:
+    import numpy as np
+    import pandas as pd
+
+    arrays = {
+        input_type: np.load(
+            _require_file(root / f"known_windows_{input_type}.npy"),
+            mmap_mode="r",
+            allow_pickle=False,
+        )
+        for input_type in INPUT_TYPES
+    }
+    labels = np.load(
+        _require_file(root / "known_labels.npy"), mmap_mode="r", allow_pickle=False
+    )
+    metadata = pd.read_csv(_require_file(root / "known_metadata.csv"))
+    return arrays, labels, metadata
+
+
+def _validate_window_set(root: Path, label: str) -> tuple[tuple[int, ...], object, object]:
+    arrays, labels, metadata = _load_window_arrays(root)
+    shapes = {input_type: tuple(array.shape) for input_type, array in arrays.items()}
+    expected_shape = next(iter(shapes.values()))
+    if any(shape != expected_shape for shape in shapes.values()):
+        raise PipelineValidationError(f"{label} input arrays have inconsistent shape: {shapes}")
+    if len(expected_shape) != 4 or expected_shape[1:] != (1, 64, 64):
+        raise PipelineValidationError(
+            f"{label} arrays must have shape (N, 1, 64, 64), found {expected_shape}"
+        )
+    count = expected_shape[0]
+    if tuple(labels.shape) != (count,):
+        raise PipelineValidationError(
+            f"{label} labels shape {tuple(labels.shape)} does not match array count {count}"
+        )
+    if len(metadata) != count:
+        raise PipelineValidationError(
+            f"{label} metadata row count {len(metadata)} does not match array count {count}"
+        )
+    _require_columns(metadata, {"structure_id"}, f"{label} metadata")
+    return expected_shape, labels, metadata
+
+
+def validate_structures(paths: PipelinePaths) -> str:
+    import pandas as pd
+
+    structures = pd.read_csv(_require_file(paths.processed_root / "structures.csv"))
+    _require_columns(
+        structures, {"type", "chrom", "start", "end", "center"}, "structures.csv"
+    )
+    if structures.empty:
+        raise PipelineValidationError("structures.csv is empty")
+    counts = structures["type"].astype(str).value_counts()
+    return " ".join(
+        [*(f"{label}={int(counts.get(label, 0))}" for label in ("CHIN", "OPCID", "CHID")), f"Total={len(structures)}"]
+    )
+
+
+def validate_base_dataset(paths: PipelinePaths) -> str:
+    shape, _, _ = _validate_window_set(paths.processed_root, "base dataset")
+    return f"N={shape[0]} shape={shape}"
+
+
+def validate_qc(paths: PipelinePaths) -> str:
+    _require_file(paths.qc_root / "qc_summary.csv")
+    figures = list(paths.qc_root.glob("*.png"))
+    if not figures:
+        raise PipelineValidationError(f"QC directory has no PNG figures: {paths.qc_root}")
+    return f"figures={len(figures)}"
+
+
+def validate_paired_dataset(paths: PipelinePaths) -> str:
+    import numpy as np
+    import pandas as pd
+
+    rep1_shape, rep1_labels, rep1_metadata = _validate_window_set(
+        paths.processed_root / "rep1", "rep1 dataset"
+    )
+    rep2_shape, rep2_labels, rep2_metadata = _validate_window_set(
+        paths.processed_root / "rep2", "rep2 dataset"
+    )
+    if rep1_shape != rep2_shape:
+        raise PipelineValidationError(
+            f"replicate array shape mismatch: rep1={rep1_shape}, rep2={rep2_shape}"
+        )
+    if not np.array_equal(rep1_labels, rep2_labels):
+        raise PipelineValidationError("replicate labels are not aligned")
+    rep1_ids = rep1_metadata["structure_id"].astype(str).tolist()
+    rep2_ids = rep2_metadata["structure_id"].astype(str).tolist()
+    if rep1_ids != rep2_ids:
+        raise PipelineValidationError("replicate structure_id order is not aligned")
+
+    paired = pd.read_csv(
+        _require_file(paths.processed_root / "paired_known_metadata.csv")
+    )
+    _require_columns(paired, {"structure_id", "replicate"}, "paired metadata")
+    if set(paired["replicate"].astype(str)) != {"rep1", "rep2"}:
+        raise PipelineValidationError("paired metadata must contain rep1 and rep2")
+    counts = paired.groupby("structure_id")["replicate"].nunique()
+    if len(counts) != rep1_shape[0] or not counts.eq(2).all():
+        raise PipelineValidationError("paired metadata does not contain two replicates per structure")
+    return f"structures={rep1_shape[0]} replicate_rows={len(paired)}"
+
+
+def validate_group_split(paths: PipelinePaths) -> str:
+    import pandas as pd
+
+    split = pd.read_csv(_require_file(paths.split_path))
+    _require_columns(
+        split,
+        {"structure_id", "type", "genomic_group_id", "split"},
+        "group split",
+    )
+    if split.empty:
+        raise PipelineValidationError("group split is empty")
+    if split["structure_id"].astype(str).duplicated().any():
+        raise PipelineValidationError("group split contains duplicate structure_id values")
+    split_names = set(split["split"].astype(str))
+    if split_names != {"train", "val", "test"}:
+        raise PipelineValidationError(
+            f"group split must contain train, val, and test; found {sorted(split_names)}"
+        )
+    group_span = split.groupby("genomic_group_id")["split"].nunique()
+    if (group_span > 1).any():
+        leaking = group_span[group_span > 1].index.astype(str).tolist()
+        raise PipelineValidationError(
+            f"genomic group leakage detected: {', '.join(leaking[:5])}"
+        )
+    return f"structures={len(split)} groups={split['genomic_group_id'].nunique()} leakage=none"
+
+
+def validate_experiments(paths: PipelinePaths) -> str:
+    import pandas as pd
+
+    comparison_path = _require_file(paths.outputs_root / "input_comparison.csv")
+    comparison = pd.read_csv(comparison_path)
+    _require_columns(comparison, {"input_type", "best_input_type"}, "input comparison")
+    input_types = comparison["input_type"].astype(str).str.casefold()
+    if len(comparison) != len(INPUT_TYPES) or set(input_types) != set(INPUT_TYPES):
+        raise PipelineValidationError("input comparison must contain raw, log1p, and oe exactly once")
+    if input_types.duplicated().any():
+        raise PipelineValidationError("input comparison contains duplicate input types")
+    selected = read_validation_selected_input(comparison_path)
+    for input_type in INPUT_TYPES:
+        experiment = paths.outputs_root / input_type
+        _require_file(experiment / "best_model.pth")
+        _require_file(experiment / "primary_structure_level_metrics.json")
+    return f"input_types=3 validation_selected={selected}"
+
+
+def validate_gradcam(paths: PipelinePaths) -> str:
+    gradcam = paths.outputs_root / "gradcam"
+    _require_file(gradcam / "gradcam_metrics.csv")
+    _require_file(gradcam / "gradcam_summary.csv")
+    figures = list(gradcam.glob("*.png"))
+    if not figures:
+        raise PipelineValidationError(f"Grad-CAM directory has no PNG figures: {gradcam}")
+    return f"figures={len(figures)}"
+
+
+def validate_finalization(paths: PipelinePaths) -> str:
+    import json
+
+    summary = _require_file(paths.outputs_root / "task1_summary.md")
+    manifest = _require_file(paths.outputs_root / "task1_manifest.json")
+    if not summary.read_text(encoding="utf-8").strip():
+        raise PipelineValidationError("Task 1 summary is empty")
+    try:
+        content = json.loads(manifest.read_text(encoding="utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise PipelineValidationError(f"Task 1 manifest is invalid JSON: {exc}") from exc
+    if not isinstance(content, dict):
+        raise PipelineValidationError("Task 1 manifest must be a JSON object")
+    return "summary=ok manifest=ok"
+
+
+Validator = Callable[[PipelinePaths], str]
+
+VALIDATORS: dict[str, Validator] = {
+    "structures": validate_structures,
+    "base_dataset": validate_base_dataset,
+    "qc": validate_qc,
+    "paired_dataset": validate_paired_dataset,
+    "group_split": validate_group_split,
+    "experiments": validate_experiments,
+    "gradcam": validate_gradcam,
+    "finalization": validate_finalization,
+}
+
+
+def should_resume_step(step: PipelineStep, paths: PipelinePaths) -> bool:
+    if not step.resumable or not step.validator_name:
+        return False
+    validator = VALIDATORS.get(step.validator_name)
+    if validator is None:
+        return False
+    try:
+        validator(paths)
+    except (PipelineValidationError, FileNotFoundError, OSError, ValueError):
+        return False
+    return True
