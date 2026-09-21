@@ -140,6 +140,18 @@ python scripts\run_task2a.py --mode full
 python scripts\run_task2a.py --mode full --resume
 ```
 
+Task 2A.1 refined detector 使用版本参数显式启用，不会覆盖上述 legacy Full 结果：
+
+```powershell
+# 独立 smoke：验证 O/E shape preprocessing、OR-Max、coverage baseline 和报告
+python scripts\run_task2a.py --mode smoke --detector-version refined
+
+# 复用经严格校验的 Full scan / Expected(d) / background split，重新训练 refined AE
+python scripts\run_task2a.py --mode full --detector-version refined --resume
+```
+
+Refined shape 输入固定为 `genome O/E → background-train 99.5% clip → log1p → per-window median/MAD normalization`。融合规则在查看 known recall 前固定为 Legacy Mean、OR-Max 和 Positive-Sum，其中 `OR_MAX` 是主 detector；不进行 alpha/beta 搜索。正式 refined 输出位于 `outputs/task2a_refined/`，legacy 继续保留在 `outputs/task2a/`。
+
 Smoke 产物位于 `outputs/pipeline_runs/task2a_smoke/`，明确不能用于科学结论；Full 产物位于 `data/task2/` 与 `outputs/task2a/`。关键结果包括 `candidate_scores.csv`、`top_candidate_regions.csv`、已知结构 recall、100 次随机基线、density/shape/combined ablation、replicate 一致性、zero-axis 审计、训练/召回/重建/Top 候选图、`task2a_manifest.json` 和 `task2a_summary.md`。
 
 ## 任务一评价口径

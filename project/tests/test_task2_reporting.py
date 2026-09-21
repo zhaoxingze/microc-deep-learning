@@ -6,12 +6,16 @@ import pytest
 
 from src.task1.manifest import sha256_file
 from src.task2.reporting import (
+    plot_branch_scatter,
+    plot_detector_recall_curves,
+    plot_or_max_vs_random,
     plot_recall_curve,
     plot_reconstruction_examples,
     plot_top_candidates,
     validate_task2a_outputs,
     write_csv_utf8,
     write_manifest,
+    write_refined_summary,
     write_summary,
 )
 
@@ -50,6 +54,56 @@ def test_report_figures_and_utf8_csv_are_created(tmp_path) -> None:
     assert recon_paths[0].stat().st_size > 0
     assert candidate_paths[0].stat().st_size > 0
     assert csv_path.read_bytes().startswith(b"\xef\xbb\xbf")
+
+
+def test_refined_diagnostic_figures_and_summary_are_created(tmp_path) -> None:
+    scores = pd.DataFrame(
+        {
+            "paired_density_z": [-1.0, 1.0, 2.0],
+            "paired_shape_z": [2.0, 1.0, -1.0],
+            "known_overlap": [False, True, False],
+        }
+    )
+    detector = pd.DataFrame(
+        [
+            {"method": method, "candidate_fraction": fraction, "overall_recall": value,
+             "CHIN_recall": value, "OPCID_recall": value, "CHID_recall": value,
+             "n_windows": 1, "union_coverage_bp": 6400}
+            for method, value in (("density_only", 0.1), ("shape_only", 0.2),
+                                  ("legacy_mean", 0.25), ("or_max", 0.4),
+                                  ("positive_sum", 0.35))
+            for fraction in (0.1, 0.2)
+        ]
+    )
+    random = detector[["method", "candidate_fraction"]].copy()
+    random["window_count_random_mean"] = 0.1
+    random["coverage_random_mean"] = 0.12
+    random["coverage_random_ci_low"] = 0.05
+    random["coverage_random_ci_high"] = 0.2
+    branch = pd.DataFrame(
+        [{"subset": "all", "n_windows": 3, "pearson": -0.5, "spearman": -0.5}]
+    )
+
+    figures = [
+        plot_branch_scatter(scores, tmp_path / "branch.png"),
+        plot_detector_recall_curves(detector, tmp_path / "detectors.png"),
+        plot_or_max_vs_random(detector, random, tmp_path / "random.png"),
+    ]
+    summary = write_refined_summary(
+        tmp_path / "summary.md", mode="full", detector_table=detector,
+        random_table=random, branch_table=branch,
+        legacy_branch_correlations={"pearson": -0.8, "spearman": -0.9},
+        training={"best_epoch": 47, "best_validation_loss": 0.25},
+        zero_axis={"all_rate": 0.1, "top_rate": 0.1, "enrichment": 1.0},
+        replicate_consistency={"pearson": 0.9, "spearman": 0.8},
+        readiness={"ready": False, "checks": {"beats_random": False}},
+        artifact_paths=figures,
+    )
+
+    assert all(path.stat().st_size > 0 for path in figures)
+    text = summary.read_text(encoding="utf-8-sig")
+    assert "primary_detector = OR_MAX" in text
+    assert "Task2A detector still needs refinement." in text
 
 
 def test_manifest_hashes_inputs_outputs_and_validator_detects_damage(tmp_path) -> None:

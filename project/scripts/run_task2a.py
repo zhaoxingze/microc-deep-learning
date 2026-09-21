@@ -19,6 +19,10 @@ def build_parser() -> argparse.ArgumentParser:
     raw_root = PROJECT_ROOT.parent / "micro-c数据"
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--mode", choices=("smoke", "full"), default="smoke")
+    parser.add_argument(
+        "--detector-version", choices=("legacy", "refined"), default="legacy",
+        help="Use the original mean-fusion detector or the versioned refined OR-Max detector.",
+    )
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--project-root", type=Path, default=PROJECT_ROOT)
@@ -43,7 +47,8 @@ def main(argv: list[str] | None = None) -> int:
     config = Task2AConfig(
         project_root=args.project_root.resolve(), raw_root=args.raw_root.resolve(),
         rep1_cool=args.rep1_cool.resolve(), rep2_cool=args.rep2_cool.resolve(),
-        mode=args.mode, dry_run=args.dry_run, resume=args.resume,
+        mode=args.mode, detector_version=args.detector_version,
+        dry_run=args.dry_run, resume=args.resume,
     )
     try:
         execute_task2a(config)
