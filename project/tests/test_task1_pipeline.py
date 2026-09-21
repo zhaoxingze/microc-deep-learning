@@ -241,6 +241,16 @@ def test_paired_validator_rejects_misaligned_replicate_shape(tmp_path: Path) -> 
         validate_paired_dataset(paths)
 
 
+def test_base_validator_accepts_pre_pairing_metadata_without_structure_id(tmp_path: Path) -> None:
+    paths = artifact_paths(tmp_path)
+    write_base_dataset(paths)
+    pd.DataFrame({"sample_index": [0, 1, 2]}).to_csv(
+        paths.processed_root / "known_metadata.csv", index=False
+    )
+
+    validate_base_dataset(paths)
+
+
 def test_group_split_validator_rejects_genomic_group_leakage(tmp_path: Path) -> None:
     paths = artifact_paths(tmp_path)
     write_split(paths, leak=True)
@@ -299,6 +309,10 @@ def test_nonzero_return_stops_later_steps(tmp_path: Path) -> None:
             environment_checker=lambda *_: None,
         )
     assert calls == [0, 1, 2, 3]
+    log_path = next((config.project_root / "outputs" / "logs").glob("run_all_*.log"))
+    log_text = log_path.read_text(encoding="utf-8")
+    assert "Step start time:" in log_text
+    assert "Step end time:" in log_text
 
 
 def test_dry_run_executes_no_runner_and_creates_no_log(tmp_path: Path) -> None:

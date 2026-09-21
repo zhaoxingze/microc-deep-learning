@@ -388,7 +388,12 @@ def _load_window_arrays(root: Path) -> tuple[dict[str, object], object, object]:
     return arrays, labels, metadata
 
 
-def _validate_window_set(root: Path, label: str) -> tuple[tuple[int, ...], object, object]:
+def _validate_window_set(
+    root: Path,
+    label: str,
+    *,
+    require_structure_id: bool = True,
+) -> tuple[tuple[int, ...], object, object]:
     arrays, labels, metadata = _load_window_arrays(root)
     shapes = {input_type: tuple(array.shape) for input_type, array in arrays.items()}
     expected_shape = next(iter(shapes.values()))
@@ -407,7 +412,8 @@ def _validate_window_set(root: Path, label: str) -> tuple[tuple[int, ...], objec
         raise PipelineValidationError(
             f"{label} metadata row count {len(metadata)} does not match array count {count}"
         )
-    _require_columns(metadata, {"structure_id"}, f"{label} metadata")
+    if require_structure_id:
+        _require_columns(metadata, {"structure_id"}, f"{label} metadata")
     return expected_shape, labels, metadata
 
 
@@ -427,7 +433,11 @@ def validate_structures(paths: PipelinePaths) -> str:
 
 
 def validate_base_dataset(paths: PipelinePaths) -> str:
-    shape, _, _ = _validate_window_set(paths.processed_root, "base dataset")
+    shape, _, _ = _validate_window_set(
+        paths.processed_root,
+        "base dataset",
+        require_structure_id=False,
+    )
     return f"N={shape[0]} shape={shape}"
 
 
@@ -703,6 +713,10 @@ def _new_log_path(project_root: Path) -> Path:
     return path
 
 
+def _timestamp() -> str:
+    return datetime.now().astimezone().isoformat(timespec="seconds")
+
+
 def _read_final_metrics(paths: PipelinePaths, selected_input: str) -> tuple[float, float]:
     metrics_path = _require_file(
         paths.outputs_root / selected_input / "primary_structure_level_metrics.json"
@@ -751,6 +765,7 @@ def execute_pipeline(
     paths = PipelinePaths.from_config(config)
     log_path = None if config.dry_run else _new_log_path(config.project_root)
     with PipelineLogger(log_path, config.project_root) as logger:
+        logger.write(f"Run timestamp: {_timestamp()}")
         environment_checker(config, logger)
         steps = build_pipeline_steps(config)
 
@@ -789,11 +804,18 @@ def execute_pipeline(
 
             step_started = time.monotonic()
             logger.write(f"[START] Step {step.number} — {step.name}")
+            logger.write(f"Step start time: {_timestamp()}")
             if step.number == 12:
-                selected_input = read_validation_selected_input(
-                    paths.outputs_root / "input_comparison.csv"
-                )
-                logger.write(f"Validation-selected input type: {selected_input}")
+                try:
+                    selected_input = read_validation_selected_input(
+                        paths.outputs_root / "input_comparison.csv"
+                    )
+                    logger.write(f"Validation-selected input type: {selected_input}")
+                except PipelineError:
+                    logger.write(f"Step end time: {_timestamp()}")
+                    logger.write(f"[FAIL] Step {step.number} — {step.name}")
+                    raise
+                logger.write(f"Step end time: {_timestamp()}")
                 logger.write(f"[PASS] Step {step.number} — {step.name}")
                 continue
             if step.number == 13:
@@ -809,25 +831,24 @@ def execute_pipeline(
             logger.write(f"Command: {_display_command(step.command)}")
             try:
                 return_code = runner(step, logger)
-            except PipelineError:
-                logger.write(f"[FAIL] Step {step.number} — {step.name}")
+                if return_code != 0:
+                    raise PipelineStepError(
+                        f"Step {step.number} failed with return code {return_code}: {step.name}"
+                    )
+                if step.validator_name:
+                    validator = VALIDATORS[step.validator_name]
+                    validation_summary = validator(paths)
+                    logger.write(f"Artifact validation: {validation_summary}")
+                    if step.validator_name == "structures":
+                        total = int(validation_summary.rsplit("Total=", 1)[1])
+                        if total != 344:
+                            logger.write(f"WARNING: expected 344 structures, found {total}")
+            except PipelineError as exc:
+                logger.write(f"Step end time: {_timestamp()}")
+                logger.write(f"[FAIL] Step {step.number} — {step.name}: {exc}")
                 raise
-            if return_code != 0:
-                logger.write(
-                    f"[FAIL] Step {step.number} — {step.name}: return code {return_code}"
-                )
-                raise PipelineStepError(
-                    f"Step {step.number} failed with return code {return_code}: {step.name}"
-                )
-            if step.validator_name:
-                validator = VALIDATORS[step.validator_name]
-                validation_summary = validator(paths)
-                logger.write(f"Artifact validation: {validation_summary}")
-                if step.validator_name == "structures":
-                    total = int(validation_summary.rsplit("Total=", 1)[1])
-                    if total != 344:
-                        logger.write(f"WARNING: expected 344 structures, found {total}")
             elapsed = time.monotonic() - step_started
+            logger.write(f"Step end time: {_timestamp()}")
             logger.write(f"[PASS] Step {step.number} — {step.name} ({elapsed:.1f}s)")
 
         if selected_input is None:
