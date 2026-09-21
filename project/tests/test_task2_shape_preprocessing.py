@@ -29,11 +29,12 @@ def test_shape_preprocessing_clips_then_log_normalizes_valid_pixels() -> None:
 
 def test_shape_preprocessing_zero_mad_and_nonfinite_values_remain_finite() -> None:
     raw = np.full((5, 5), 4.0)
-    raw[0, 3] = np.inf
-    raw[0, 4] = np.nan
+    raw[0, 0] = np.inf
+    raw[1, 1] = np.nan
     transformed = preprocess_shape_window(raw, np.ones(5), clip_value=10.0)
 
     assert np.isfinite(transformed).all()
+    assert float(np.max(np.abs(transformed))) < 10.0
 
 
 def test_clip_fitting_uses_only_background_train_rows(tmp_path: Path) -> None:

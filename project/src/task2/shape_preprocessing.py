@@ -39,7 +39,10 @@ def preprocess_shape_window(
         raise ValueError("shape normalization mask selects no pixels")
     median = float(np.median(valid))
     mad = float(np.median(np.abs(valid - median)))
-    normalized = (logged - median) / (1.4826 * mad + eps)
+    scale = 1.4826 * mad + eps
+    if mad <= eps:
+        scale = 1.0
+    normalized = (logged - median) / scale
     return np.nan_to_num(normalized, nan=0.0, posinf=0.0, neginf=0.0).astype(np.float32)
 
 
