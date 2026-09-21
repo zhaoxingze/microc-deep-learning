@@ -111,6 +111,37 @@ Smoke 会完整执行数据、split、3 输入 CNN、辅助分析、Grad-CAM、z
 - `dataset_manifest.json` 记录参数、依赖版本、输入与输出 SHA-256，便于复现和完整性核验。
 - 不会删除局部覆盖缺口：含完整零行/零列的窗口会以 `has_zero_axis`、`zero_row_count`、`zero_col_count` 标记，供训练前明确决定保留、掩码或分层分析。
 
+## Task 2A：一键候选结构检测
+
+Task 2A 严格止于全基因组候选窗口排序与已知结构召回验证，不进入聚类、UMAP、HDBSCAN、novel class 或 Task 2B/2C。默认以 6,400 bp 窗口、800 bp 步长扫描两个 WT replicate；密度分数来自 genome-wide Expected(d) 的 O/E，形状分数来自只用已知结构排除区之外背景训练的卷积自编码器。两个分数分别用背景窗口的 median/MAD 标准化，再按固定权重组合：
+
+```text
+density_z = (density - median_background) / (1.4826 * MAD_background + eps)
+shape_z   = (shape_MSE - median_background) / (1.4826 * MAD_background + eps)
+candidate_score = 0.5 * density_z + 0.5 * shape_z
+paired_score = mean(rep1_score, rep2_score)
+```
+
+运行入口：
+
+```powershell
+cd F:\Micro-C\project
+
+# 100 kb、3 epochs 的端到端快速验证；产物与正式结果隔离
+python scripts\run_task2a.py --mode smoke
+
+# 查看完整正式计划，不创建日志或科学产物
+python scripts\run_task2a.py --mode full --dry-run
+
+# 全染色体正式运行（约 5,795 个窗口，60 epochs / patience 10）
+python scripts\run_task2a.py --mode full
+
+# 仅复用通过严格 shape、对齐与泄漏验证的 scan/expected/background 阶段
+python scripts\run_task2a.py --mode full --resume
+```
+
+Smoke 产物位于 `outputs/pipeline_runs/task2a_smoke/`，明确不能用于科学结论；Full 产物位于 `data/task2/` 与 `outputs/task2a/`。关键结果包括 `candidate_scores.csv`、`top_candidate_regions.csv`、已知结构 recall、100 次随机基线、density/shape/combined ablation、replicate 一致性、zero-axis 审计、训练/召回/重建/Top 候选图、`task2a_manifest.json` 和 `task2a_summary.md`。
+
 ## 任务一评价口径
 
 - `genomic_group_id` 是 Train/Validation/Test 的不可拆分单位；固定划分保存在 `data/splits/group_split.csv`。

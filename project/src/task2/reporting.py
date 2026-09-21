@@ -64,6 +64,22 @@ def plot_recall_curve(
     return destination
 
 
+def plot_training_curve(history: pd.DataFrame, path: str | Path) -> Path:
+    destination = _prepare(path)
+    required = {"epoch", "train_loss", "val_loss"}
+    if not required.issubset(history.columns):
+        raise ValueError("training history is incomplete")
+    figure, axis = plt.subplots(figsize=(7.2, 4.8), constrained_layout=True)
+    axis.plot(history["epoch"], history["train_loss"], marker="o", label="Train")
+    axis.plot(history["epoch"], history["val_loss"], marker="o", label="Validation")
+    axis.set(xlabel="Epoch", ylabel="MSE loss")
+    axis.grid(alpha=0.25)
+    axis.legend(frameon=False)
+    figure.savefig(destination, dpi=180)
+    plt.close(figure)
+    return destination
+
+
 def _safe_name(value: object) -> str:
     return re.sub(r"[^A-Za-z0-9_.-]+", "_", str(value)).strip("_") or "item"
 
