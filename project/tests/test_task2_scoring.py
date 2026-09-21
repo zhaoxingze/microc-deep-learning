@@ -6,6 +6,7 @@ from src.task2.scoring import (
     candidate_score,
     density_features,
     fit_robust_scale,
+    fusion_scores,
     off_diagonal_mask,
     score_windows,
 )
@@ -36,6 +37,14 @@ def test_candidate_score_uses_fixed_weighted_sum_and_validates_weights() -> None
         candidate_score(np.array([2.0]), np.array([4.0]), density_weight=0.7, shape_weight=0.7)
 
 
+def test_fixed_fusion_rules_prevent_negative_branch_cancellation() -> None:
+    scores = fusion_scores(np.array([8.0, -3.0]), np.array([-3.0, 8.0]))
+
+    np.testing.assert_allclose(scores["score_mean"], [2.5, 2.5])
+    np.testing.assert_allclose(scores["score_or_max"], [8.0, 8.0])
+    np.testing.assert_allclose(scores["score_positive_sum"], [8.0, 8.0])
+
+
 def test_score_windows_emits_paired_component_scores(tmp_path) -> None:
     rep1_path = tmp_path / "rep1.npy"
     rep2_path = tmp_path / "rep2.npy"
@@ -64,10 +73,16 @@ def test_score_windows_emits_paired_component_scores(tmp_path) -> None:
         {"rep1": np.ones(4), "rep2": np.ones(4)},
         reconstruction,
         {"w1", "w2"},
+        primary_fusion="or_max",
     )
 
-    assert {"paired_density_z", "paired_shape_z", "paired_candidate_score"}.issubset(scores)
+    assert {
+        "paired_density_z", "paired_shape_z", "paired_candidate_score",
+        "score_mean", "score_or_max", "score_positive_sum", "primary_score",
+    }.issubset(scores)
     np.testing.assert_allclose(
         scores["paired_candidate_score"],
         0.5 * scores["paired_density_z"] + 0.5 * scores["paired_shape_z"],
     )
+    np.testing.assert_allclose(scores["primary_score"], scores["score_or_max"])
+    assert scores["primary_detector"].eq("OR_MAX").all()

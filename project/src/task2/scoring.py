@@ -71,6 +71,18 @@ def candidate_score(
     return density_weight * np.asarray(density_z) + shape_weight * np.asarray(shape_z)
 
 
+def fusion_scores(density_z: np.ndarray, shape_z: np.ndarray) -> dict[str, np.ndarray]:
+    density = np.asarray(density_z, dtype=np.float64)
+    shape = np.asarray(shape_z, dtype=np.float64)
+    if density.shape != shape.shape:
+        raise ValueError("density and shape z-scores must have identical shapes")
+    return {
+        "score_mean": 0.5 * density + 0.5 * shape,
+        "score_or_max": np.maximum(density, shape),
+        "score_positive_sum": np.maximum(0.0, density) + np.maximum(0.0, shape),
+    }
+
+
 def score_windows(
     metadata: pd.DataFrame,
     array_paths: Mapping[str, str | Path],
@@ -81,7 +93,10 @@ def score_windows(
     density_weight: float = 0.5,
     shape_weight: float = 0.5,
     exclude_band: int = 2,
+    primary_fusion: str = "mean",
 ) -> tuple[pd.DataFrame, dict[str, dict[str, float]]]:
+    if primary_fusion not in {"mean", "or_max", "positive_sum"}:
+        raise ValueError("primary_fusion must be mean, or_max, or positive_sum")
     required = {
         "window_id", "chrom", "start", "end", "center", "replicate",
         "array_index", "zero_axis",
@@ -135,6 +150,12 @@ def score_windows(
             density_weight=density_weight,
             shape_weight=shape_weight,
         )
+        fixed = fusion_scores(
+            long.loc[replicate_rows, "density_z"].to_numpy(),
+            long.loc[replicate_rows, "shape_z"].to_numpy(),
+        )
+        for column, values in fixed.items():
+            long.loc[replicate_rows, column] = values
         statistics[replicate] = {
             "density_median": density_scale.median,
             "density_mad": density_scale.mad,
@@ -147,6 +168,7 @@ def score_windows(
     ]].copy()
     metric_columns = [
         "density_raw", "density_z", "shape_raw", "shape_z", "candidate_score",
+        "score_mean", "score_or_max", "score_positive_sum",
         "oe_mean", "oe_std", "oe_max", "oe_p95", "oe_total", "zero_axis",
     ]
     wide = coordinates
@@ -163,15 +185,20 @@ def score_windows(
     wide["paired_candidate_score"] = (
         wide["rep1_candidate_score"] + wide["rep2_candidate_score"]
     ) / 2.0
+    for column in ("score_mean", "score_or_max", "score_positive_sum"):
+        wide[column] = (wide[f"rep1_{column}"] + wide[f"rep2_{column}"]) / 2.0
+    primary_column = f"score_{primary_fusion}"
+    wide["primary_score"] = wide[primary_column]
+    wide["primary_detector"] = primary_fusion.upper()
     wide["score_difference"] = (
-        wide["rep1_candidate_score"] - wide["rep2_candidate_score"]
+        wide[f"rep1_{primary_column}"] - wide[f"rep2_{primary_column}"]
     ).abs()
-    wide["score_min"] = wide[["rep1_candidate_score", "rep2_candidate_score"]].min(axis=1)
-    wide["score_max"] = wide[["rep1_candidate_score", "rep2_candidate_score"]].max(axis=1)
+    wide["score_min"] = wide[[f"rep1_{primary_column}", f"rep2_{primary_column}"]].min(axis=1)
+    wide["score_max"] = wide[[f"rep1_{primary_column}", f"rep2_{primary_column}"]].max(axis=1)
     wide = wide.rename(
         columns={"rep1_zero_axis": "zero_axis_rep1", "rep2_zero_axis": "zero_axis_rep2"}
     )
-    wide = wide.sort_values("paired_candidate_score", ascending=False).reset_index(drop=True)
+    wide = wide.sort_values("primary_score", ascending=False).reset_index(drop=True)
     wide["rank"] = np.arange(1, len(wide) + 1)
     wide["percentile"] = 1.0 - (wide["rank"] - 1) / len(wide)
     return wide, statistics
