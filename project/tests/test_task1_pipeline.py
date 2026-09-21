@@ -16,6 +16,7 @@ from src.task1.pipeline import (
     PipelinePaths,
     PipelineStepError,
     PipelineValidationError,
+    build_subprocess_environment,
     build_pipeline_steps,
     check_environment,
     execute_pipeline,
@@ -366,6 +367,24 @@ def test_logger_writes_utf8_to_terminal_and_file(tmp_path: Path, capsys) -> None
     assert log_path.read_text(encoding="utf-8") == "中文日志\n"
 
 
+def test_subprocess_environment_configures_cuda_and_isolates_pytest_plugins(
+    monkeypatch,
+) -> None:
+    monkeypatch.delenv("CUBLAS_WORKSPACE_CONFIG", raising=False)
+    monkeypatch.delenv("PYTEST_DISABLE_PLUGIN_AUTOLOAD", raising=False)
+
+    environment = build_subprocess_environment()
+
+    assert environment["CUBLAS_WORKSPACE_CONFIG"] == ":4096:8"
+    assert environment["PYTEST_DISABLE_PLUGIN_AUTOLOAD"] == "1"
+    assert "PATH" in environment or "Path" in environment
+
+
+def test_subprocess_environment_preserves_supported_cublas_choice(monkeypatch) -> None:
+    monkeypatch.setenv("CUBLAS_WORKSPACE_CONFIG", ":16:8")
+    assert build_subprocess_environment()["CUBLAS_WORKSPACE_CONFIG"] == ":16:8"
+
+
 def load_run_all_module():
     script = Path(__file__).resolve().parents[1] / "scripts" / "run_all.py"
     spec = importlib.util.spec_from_file_location("task1_run_all", script)
@@ -411,3 +430,5 @@ def test_powershell_wrapper_maps_only_pipeline_flags() -> None:
         "train_task1.py",
     ):
         assert scientific_script not in wrapper
+    assert "outputs\\logs" in wrapper
+    assert "FullName" in wrapper

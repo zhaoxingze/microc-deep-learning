@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib
 import json
+import os
 import platform
 import subprocess
 import sys
@@ -659,6 +660,15 @@ def check_environment(
         raise PipelineValidationError("Environment check failed:\n" + "\n".join(problems))
 
     torch = imported.get("torch")
+    subprocess_environment = build_subprocess_environment()
+    logger.write(
+        "CUBLAS_WORKSPACE_CONFIG: "
+        + subprocess_environment["CUBLAS_WORKSPACE_CONFIG"]
+    )
+    logger.write(
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD: "
+        + subprocess_environment["PYTEST_DISABLE_PLUGIN_AUTOLOAD"]
+    )
     if torch is not None:
         cuda_available = bool(torch.cuda.is_available())
         logger.write(f"torch.cuda.is_available(): {cuda_available}")
@@ -671,6 +681,16 @@ def check_environment(
 
 def _display_command(command: tuple[str, ...]) -> str:
     return subprocess.list2cmdline(list(command))
+
+
+def build_subprocess_environment() -> dict[str, str]:
+    """Return an inherited environment safe for deterministic CUDA and pytest."""
+
+    environment = os.environ.copy()
+    if environment.get("CUBLAS_WORKSPACE_CONFIG") not in {":4096:8", ":16:8"}:
+        environment["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
+    environment["PYTEST_DISABLE_PLUGIN_AUTOLOAD"] = "1"
+    return environment
 
 
 def run_subprocess_streaming(step: PipelineStep, logger: PipelineLogger) -> int:
@@ -689,6 +709,7 @@ def run_subprocess_streaming(step: PipelineStep, logger: PipelineLogger) -> int:
             errors="replace",
             bufsize=1,
             shell=False,
+            env=build_subprocess_environment(),
         )
     except OSError as exc:
         raise PipelineStepError(f"Step {step.number} could not start: {exc}") from exc

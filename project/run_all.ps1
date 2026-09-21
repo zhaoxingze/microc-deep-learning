@@ -16,5 +16,13 @@ if ($Resume) { $arguments += "--resume" }
 
 & $python @arguments
 if ($LASTEXITCODE -ne 0) {
-    throw "Task 1 pipeline failed with exit code $LASTEXITCODE"
+    $logDirectory = Join-Path $PSScriptRoot "outputs\logs"
+    $latestLog = Get-ChildItem -LiteralPath $logDirectory -Filter "run_all_*.log" -ErrorAction SilentlyContinue |
+        Sort-Object LastWriteTime -Descending |
+        Select-Object -First 1
+    $message = "Task 1 pipeline failed with exit code $LASTEXITCODE"
+    if ($null -ne $latestLog) {
+        $message += ". See the real failure in: $($latestLog.FullName)"
+    }
+    throw $message
 }
