@@ -11,9 +11,13 @@ import pytest
 
 from src.task1.pipeline import (
     PipelineConfig,
+    PipelineLogger,
     PipelinePaths,
+    PipelineStepError,
     PipelineValidationError,
     build_pipeline_steps,
+    check_environment,
+    execute_pipeline,
     read_validation_selected_input,
     should_resume_step,
     validate_base_dataset,
@@ -277,3 +281,71 @@ def test_analysis_artifact_validators_require_core_outputs(tmp_path: Path) -> No
     (paths.outputs_root / "task1_summary.md").write_text("summary", encoding="utf-8")
     (paths.outputs_root / "task1_manifest.json").write_text(json.dumps({"task": "task1"}), encoding="utf-8")
     validate_finalization(paths)
+
+
+def test_nonzero_return_stops_later_steps(tmp_path: Path) -> None:
+    calls: list[int] = []
+
+    def runner(step, logger):
+        calls.append(step.number)
+        return 7 if step.number == 3 else 0
+
+    config = make_config(tmp_path)
+    with pytest.raises(PipelineStepError, match="Step 3"):
+        execute_pipeline(
+            config,
+            runner=runner,
+            environment_checker=lambda *_: None,
+        )
+    assert calls == [0, 1, 2, 3]
+
+
+def test_dry_run_executes_no_runner_and_creates_no_log(tmp_path: Path) -> None:
+    calls: list[object] = []
+    config = make_config(tmp_path, dry_run=True)
+
+    result = execute_pipeline(
+        config,
+        runner=lambda *args: calls.append(args),
+        environment_checker=lambda *_: None,
+    )
+
+    assert calls == []
+    assert result.log_path is None
+    assert not (config.project_root / "outputs").exists()
+
+
+def test_skip_tests_omits_only_test_steps_before_failure(tmp_path: Path) -> None:
+    calls: list[int] = []
+
+    def runner(step, logger):
+        calls.append(step.number)
+        return 9 if step.number == 1 else 0
+
+    config = make_config(tmp_path, skip_tests=True)
+    with pytest.raises(PipelineStepError):
+        execute_pipeline(
+            config,
+            runner=runner,
+            environment_checker=lambda *_: None,
+        )
+    assert calls == [1]
+
+
+def test_environment_check_reports_missing_exact_cooler_and_candidates(tmp_path: Path) -> None:
+    config = make_config(tmp_path)
+    candidate = config.raw_root / "different.cool"
+    candidate.write_bytes(b"candidate")
+    logger = PipelineLogger(None, config.project_root)
+
+    with pytest.raises(PipelineValidationError, match="different.cool"):
+        check_environment(config, logger, required_modules=())
+
+
+def test_logger_writes_utf8_to_terminal_and_file(tmp_path: Path, capsys) -> None:
+    log_path = tmp_path / "运行.log"
+    logger = PipelineLogger(log_path, tmp_path)
+    logger.write("中文日志")
+
+    assert "中文日志" in capsys.readouterr().out
+    assert log_path.read_text(encoding="utf-8") == "中文日志\n"

@@ -2,10 +2,17 @@
 
 from __future__ import annotations
 
+import importlib
+import json
+import platform
+import subprocess
 import sys
+import time
 from dataclasses import dataclass, field
+from dataclasses import replace
+from datetime import datetime
 from pathlib import Path
-from typing import Callable, Literal
+from typing import Callable, Literal, TextIO
 
 
 INPUT_TYPES = ("raw", "log1p", "oe")
@@ -17,6 +24,10 @@ class PipelineError(RuntimeError):
 
 class PipelineValidationError(PipelineError):
     """Raised when an input or generated artifact violates its contract."""
+
+
+class PipelineStepError(PipelineError):
+    """Raised when a pipeline subprocess fails."""
 
 
 @dataclass(frozen=True)
@@ -76,6 +87,51 @@ class PipelineStep:
     command: tuple[str, ...] | None
     validator_name: str | None = None
     resumable: bool = False
+
+
+@dataclass(frozen=True)
+class PipelineResult:
+    mode: str
+    selected_input: str | None
+    test_accuracy: float | None
+    test_macro_f1: float | None
+    summary_path: Path | None
+    manifest_path: Path | None
+    gradcam_dir: Path | None
+    checkpoint_path: Path | None
+    log_path: Path | None
+    elapsed_seconds: float
+    dry_run: bool = False
+
+
+class PipelineLogger:
+    """Write one UTF-8 stream to the terminal and, optionally, a log file."""
+
+    def __init__(self, log_path: Path | None, cwd: Path) -> None:
+        self.log_path = log_path
+        self.cwd = cwd
+        self._handle: TextIO | None = None
+        if log_path is not None:
+            log_path.parent.mkdir(parents=True, exist_ok=True)
+            self._handle = log_path.open("a", encoding="utf-8", newline="")
+
+    def write(self, message: str) -> None:
+        line = message.rstrip("\r\n")
+        print(line, flush=True)
+        if self._handle is not None:
+            self._handle.write(line + "\n")
+            self._handle.flush()
+
+    def close(self) -> None:
+        if self._handle is not None:
+            self._handle.close()
+            self._handle = None
+
+    def __enter__(self) -> "PipelineLogger":
+        return self
+
+    def __exit__(self, *_: object) -> None:
+        self.close()
 
 
 def _script(paths: PipelinePaths, name: str) -> str:
@@ -513,3 +569,282 @@ def should_resume_step(step: PipelineStep, paths: PipelinePaths) -> bool:
     except (PipelineValidationError, FileNotFoundError, OSError, ValueError):
         return False
     return True
+
+
+REQUIRED_MODULES = (
+    "numpy",
+    "pandas",
+    "scipy",
+    "sklearn",
+    "torch",
+    "cooler",
+    "matplotlib",
+    "pytest",
+)
+
+
+def check_environment(
+    config: PipelineConfig,
+    logger: PipelineLogger,
+    required_modules: tuple[str, ...] = REQUIRED_MODULES,
+) -> None:
+    """Validate exact inputs and imports without modifying the experiment workspace."""
+
+    metadata = (
+        ("Python executable", config.python_executable),
+        ("Python version", platform.python_version()),
+        ("ProjectRoot", config.project_root.resolve()),
+        ("RawRoot", config.raw_root.resolve()),
+        ("Rep1", config.rep1_cool.resolve()),
+        ("Rep2", config.rep2_cool.resolve()),
+        ("Mode", config.mode),
+        ("DryRun", config.dry_run),
+        ("Resume", config.resume),
+        ("SkipTests", config.skip_tests),
+    )
+    logger.write("[START] Environment Check")
+    for key, value in metadata:
+        logger.write(f"{key}: {value}")
+
+    problems: list[str] = []
+    if not config.project_root.is_dir():
+        problems.append(f"Project root is missing: {config.project_root}")
+    if not config.raw_root.is_dir():
+        problems.append(f"Raw-data root is missing: {config.raw_root}")
+
+    missing_coolers = [
+        path for path in (config.rep1_cool, config.rep2_cool) if not path.is_file()
+    ]
+    if missing_coolers:
+        problems.extend(f"Required Cooler is missing: {path}" for path in missing_coolers)
+        candidates = sorted(config.raw_root.glob("*.cool*")) if config.raw_root.is_dir() else []
+        if candidates:
+            problems.append(
+                "Available Cooler candidates (not auto-selected): "
+                + ", ".join(str(path) for path in candidates)
+            )
+        else:
+            problems.append("Available Cooler candidates: none")
+
+    missing_scripts = []
+    for step in build_pipeline_steps(config):
+        if step.command and len(step.command) > 1 and step.command[1].endswith(".py"):
+            script = Path(step.command[1])
+            if not script.is_file():
+                missing_scripts.append(script)
+    problems.extend(f"Pipeline script is missing: {path}" for path in missing_scripts)
+
+    imported: dict[str, object] = {}
+    for module_name in required_modules:
+        try:
+            imported[module_name] = importlib.import_module(module_name)
+        except ImportError:
+            problems.append(f"Missing dependency: {module_name}")
+
+    if problems:
+        for problem in problems:
+            logger.write(problem)
+        if any(problem.startswith("Missing dependency:") for problem in problems):
+            logger.write("Install with: python -m pip install -r requirements.txt")
+        raise PipelineValidationError("Environment check failed:\n" + "\n".join(problems))
+
+    torch = imported.get("torch")
+    if torch is not None:
+        cuda_available = bool(torch.cuda.is_available())
+        logger.write(f"torch.cuda.is_available(): {cuda_available}")
+        if cuda_available:
+            logger.write(f"GPU name: {torch.cuda.get_device_name(0)}")
+        else:
+            logger.write("CUDA unavailable; Task1 CNN will run on CPU.")
+    logger.write("[PASS] Environment Check")
+
+
+def _display_command(command: tuple[str, ...]) -> str:
+    return subprocess.list2cmdline(list(command))
+
+
+def run_subprocess_streaming(step: PipelineStep, logger: PipelineLogger) -> int:
+    """Run one command without a shell and stream merged output to the logger."""
+
+    if step.command is None:
+        raise PipelineStepError(f"Step {step.number} has no subprocess command")
+    try:
+        process = subprocess.Popen(
+            list(step.command),
+            cwd=logger.cwd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            bufsize=1,
+            shell=False,
+        )
+    except OSError as exc:
+        raise PipelineStepError(f"Step {step.number} could not start: {exc}") from exc
+    assert process.stdout is not None
+    for line in process.stdout:
+        logger.write(line)
+    return process.wait()
+
+
+Runner = Callable[[PipelineStep, PipelineLogger], int]
+EnvironmentChecker = Callable[[PipelineConfig, PipelineLogger], None]
+
+
+def _new_log_path(project_root: Path) -> Path:
+    log_dir = project_root / "outputs" / "logs"
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    path = log_dir / f"run_all_{timestamp}.log"
+    suffix = 1
+    while path.exists():
+        path = log_dir / f"run_all_{timestamp}_{suffix}.log"
+        suffix += 1
+    return path
+
+
+def _read_final_metrics(paths: PipelinePaths, selected_input: str) -> tuple[float, float]:
+    metrics_path = _require_file(
+        paths.outputs_root / selected_input / "primary_structure_level_metrics.json"
+    )
+    try:
+        metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
+        return float(metrics["accuracy"]), float(metrics["macro_f1"])
+    except (UnicodeDecodeError, json.JSONDecodeError, KeyError, TypeError, ValueError) as exc:
+        raise PipelineValidationError(f"Invalid primary metrics file {metrics_path}: {exc}") from exc
+
+
+def _print_final_summary(
+    logger: PipelineLogger,
+    result: PipelineResult,
+) -> None:
+    logger.write("=" * 60)
+    logger.write("TASK 1 PIPELINE COMPLETED SUCCESSFULLY")
+    logger.write("=" * 60)
+    logger.write(f"Mode: {result.mode}")
+    logger.write(f"Selected input type: {result.selected_input}")
+    logger.write(f"Test Accuracy: {result.test_accuracy:.6f}")
+    logger.write(f"Test Macro-F1: {result.test_macro_f1:.6f}")
+    logger.write(f"Task1 summary: {result.summary_path}")
+    logger.write(f"Task1 manifest: {result.manifest_path}")
+    logger.write(f"Grad-CAM directory: {result.gradcam_dir}")
+    logger.write(f"Main model checkpoint: {result.checkpoint_path}")
+    logger.write(f"Log file: {result.log_path}")
+    logger.write(f"Elapsed time: {result.elapsed_seconds:.1f} seconds")
+    if result.mode == "smoke":
+        logger.write("=" * 60)
+        logger.write("SMOKE RESULT - NOT FOR FINAL REPORTING")
+        logger.write("Results are for pipeline verification only.")
+        logger.write("Do NOT use smoke results for final scientific reporting.")
+        logger.write("=" * 60)
+
+
+def execute_pipeline(
+    config: PipelineConfig,
+    *,
+    runner: Runner = run_subprocess_streaming,
+    environment_checker: EnvironmentChecker = check_environment,
+) -> PipelineResult:
+    """Execute the complete ordered Task 1 pipeline or print its dry-run plan."""
+
+    started = time.monotonic()
+    paths = PipelinePaths.from_config(config)
+    log_path = None if config.dry_run else _new_log_path(config.project_root)
+    with PipelineLogger(log_path, config.project_root) as logger:
+        environment_checker(config, logger)
+        steps = build_pipeline_steps(config)
+
+        if config.dry_run:
+            for step in steps:
+                if config.skip_tests and step.number in {0, 15}:
+                    logger.write(f"[DRY RUN] Step {step.number} — {step.name}: SKIPPED by --skip-tests")
+                elif step.command is None:
+                    logger.write(f"[DRY RUN] Step {step.number} — {step.name}: internal validation-only selection")
+                else:
+                    logger.write(f"[DRY RUN] Step {step.number} — {step.name}")
+                    logger.write(f"Command: {_display_command(step.command)}")
+            return PipelineResult(
+                mode=config.mode,
+                selected_input=None,
+                test_accuracy=None,
+                test_macro_f1=None,
+                summary_path=None,
+                manifest_path=None,
+                gradcam_dir=None,
+                checkpoint_path=None,
+                log_path=None,
+                elapsed_seconds=time.monotonic() - started,
+                dry_run=True,
+            )
+
+        selected_input: str | None = None
+        for original_step in steps:
+            step = original_step
+            if config.skip_tests and step.number in {0, 15}:
+                logger.write(f"[SKIP] Step {step.number} — {step.name}: SKIPPED by --skip-tests")
+                continue
+            if config.resume and should_resume_step(step, paths):
+                logger.write(f"[SKIP] Step {step.number} — {step.name}: validated by --resume")
+                continue
+
+            step_started = time.monotonic()
+            logger.write(f"[START] Step {step.number} — {step.name}")
+            if step.number == 12:
+                selected_input = read_validation_selected_input(
+                    paths.outputs_root / "input_comparison.csv"
+                )
+                logger.write(f"Validation-selected input type: {selected_input}")
+                logger.write(f"[PASS] Step {step.number} — {step.name}")
+                continue
+            if step.number == 13:
+                if selected_input is None:
+                    raise PipelineValidationError(
+                        "Zero-axis sensitivity cannot run before validation-selected input resolution"
+                    )
+                step = replace(
+                    step,
+                    command=build_zero_axis_command(config, paths, selected_input),
+                )
+            assert step.command is not None
+            logger.write(f"Command: {_display_command(step.command)}")
+            try:
+                return_code = runner(step, logger)
+            except PipelineError:
+                logger.write(f"[FAIL] Step {step.number} — {step.name}")
+                raise
+            if return_code != 0:
+                logger.write(
+                    f"[FAIL] Step {step.number} — {step.name}: return code {return_code}"
+                )
+                raise PipelineStepError(
+                    f"Step {step.number} failed with return code {return_code}: {step.name}"
+                )
+            if step.validator_name:
+                validator = VALIDATORS[step.validator_name]
+                validation_summary = validator(paths)
+                logger.write(f"Artifact validation: {validation_summary}")
+                if step.validator_name == "structures":
+                    total = int(validation_summary.rsplit("Total=", 1)[1])
+                    if total != 344:
+                        logger.write(f"WARNING: expected 344 structures, found {total}")
+            elapsed = time.monotonic() - step_started
+            logger.write(f"[PASS] Step {step.number} — {step.name} ({elapsed:.1f}s)")
+
+        if selected_input is None:
+            raise PipelineValidationError("Pipeline completed steps without selecting an input type")
+        test_accuracy, test_macro_f1 = _read_final_metrics(paths, selected_input)
+        elapsed = time.monotonic() - started
+        result = PipelineResult(
+            mode=config.mode,
+            selected_input=selected_input,
+            test_accuracy=test_accuracy,
+            test_macro_f1=test_macro_f1,
+            summary_path=paths.outputs_root / "task1_summary.md",
+            manifest_path=paths.outputs_root / "task1_manifest.json",
+            gradcam_dir=paths.outputs_root / "gradcam",
+            checkpoint_path=paths.outputs_root / selected_input / "best_model.pth",
+            log_path=log_path,
+            elapsed_seconds=elapsed,
+        )
+        _print_final_summary(logger, result)
+        return result
