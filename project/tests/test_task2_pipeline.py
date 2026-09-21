@@ -1,10 +1,12 @@
 from pathlib import Path
 
+import pandas as pd
 import pytest
 
 from scripts.run_task2a import parse_args
 from src.task1.pipeline import PipelineValidationError
 from src.task2.pipeline import (
+    _readiness_assessment,
     Task2AConfig,
     Task2APaths,
     build_task2a_plan,
@@ -94,6 +96,40 @@ def test_refined_manifest_configuration_records_fixed_science_rules(tmp_path) ->
     assert payload["fusion_methods"] == ["MEAN", "OR_MAX", "POSITIVE_SUM"]
     assert payload["epochs"] == 120 and payload["patience"] == 15
     assert payload["best_epoch"] == 47
+
+
+def test_readiness_rejects_single_threshold_random_win_and_legacy_regression() -> None:
+    detector = pd.DataFrame(
+        [
+            {"method": "or_max", "candidate_fraction": 0.10, "overall_recall": 0.30,
+             "CHIN_recall": 0.2, "OPCID_recall": 0.6, "CHID_recall": 0.1},
+            {"method": "or_max", "candidate_fraction": 0.20, "overall_recall": 0.40,
+             "CHIN_recall": 0.3, "OPCID_recall": 0.8, "CHID_recall": 0.2},
+        ]
+    )
+    random = pd.DataFrame(
+        [
+            {"method": "or_max", "candidate_fraction": 0.10,
+             "coverage_random_ci_high": 0.25},
+            {"method": "or_max", "candidate_fraction": 0.20,
+             "coverage_random_ci_high": 0.42},
+        ]
+    )
+    branch = pd.DataFrame(
+        [{"subset": "all", "pearson": -0.2, "spearman": -0.3}]
+    )
+
+    result = _readiness_assessment(
+        detector, random, branch,
+        {"all_rate": 0.1, "top_rate": 0.05},
+        {"pearson": 0.9, "spearman": 0.8},
+        {"overall_recall": 0.50, "CHIN_recall": 0.4,
+         "OPCID_recall": 0.75, "CHID_recall": 0.6},
+    )
+
+    assert result["ready"] is False
+    assert result["checks"]["beats_coverage_random_95pct_at_top10_and_top20"] is False
+    assert result["checks"]["retains_legacy_top20_overall"] is False
 
 
 def test_plan_contains_all_scientific_stages_and_dry_run_writes_nothing(tmp_path) -> None:

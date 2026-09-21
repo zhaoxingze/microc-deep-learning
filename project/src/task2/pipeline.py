@@ -439,12 +439,28 @@ def _legacy_branch_correlations(project_root: Path) -> dict[str, float]:
     }
 
 
+def _legacy_top20_recall(project_root: Path) -> dict[str, float]:
+    path = project_root / "outputs" / "task2a" / "known_structure_recall.csv"
+    empty = {
+        "overall_recall": float("nan"), "CHIN_recall": float("nan"),
+        "OPCID_recall": float("nan"), "CHID_recall": float("nan"),
+    }
+    if not path.is_file():
+        return empty
+    table = pd.read_csv(path, encoding="utf-8-sig")
+    rows = table.loc[np.isclose(table["candidate_fraction"], 0.20)]
+    if rows.empty:
+        return empty
+    return {key: float(rows.iloc[0][key]) for key in empty}
+
+
 def _readiness_assessment(
     detector_table: pd.DataFrame,
     random_table: pd.DataFrame,
     branch_table: pd.DataFrame,
     zero_axis: dict[str, float],
     consistency: dict[str, float],
+    legacy_top20_recall: dict[str, float],
 ) -> dict[str, object]:
     joined = detector_table.loc[
         detector_table["method"].eq("or_max")
@@ -454,8 +470,9 @@ def _readiness_assessment(
         on=["method", "candidate_fraction"], suffixes=("", "_random"),
     )
     beats_random = bool(
-        (joined["overall_recall"] > joined["coverage_random_ci_high"]).any()
-    ) if not joined.empty else False
+        len(joined) == 2
+        and (joined["overall_recall"] > joined["coverage_random_ci_high"]).all()
+    )
     top20 = detector_table.loc[
         detector_table["method"].eq("or_max")
         & np.isclose(detector_table["candidate_fraction"], 0.20)
@@ -471,9 +488,17 @@ def _readiness_assessment(
     all_branch = branch_table.loc[branch_table["subset"].eq("all")]
     branch_spearman = float(all_branch.iloc[0]["spearman"]) if not all_branch.empty else float("nan")
     shape_nonredundant = bool(np.isfinite(branch_spearman) and abs(branch_spearman) < 0.95)
+    refined_top20_overall = float(top20.iloc[0]["overall_recall"]) if not top20.empty else float("nan")
+    legacy_top20_overall = float(legacy_top20_recall.get("overall_recall", float("nan")))
+    retains_legacy = bool(
+        np.isfinite(refined_top20_overall)
+        and np.isfinite(legacy_top20_overall)
+        and refined_top20_overall >= legacy_top20_overall
+    )
     checks = {
-        "beats_coverage_random_95pct": beats_random,
+        "beats_coverage_random_95pct_at_top10_and_top20": beats_random,
         "all_classes_recalled_at_top20pct": classes_active,
+        "retains_legacy_top20_overall": retains_legacy,
         "zero_axis_not_dominant": zero_not_dominant,
         "replicate_scores_positively_correlated": replicate_consistent,
         "shape_branch_not_near_duplicate": shape_nonredundant,
@@ -714,8 +739,10 @@ def execute_task2a(config: Task2AConfig) -> Task2AResult:
             zero_stats = {"all_rate": all_rate, "top_rate": top_rate, "enrichment": enrichment}
             if refined:
                 legacy_correlations = _legacy_branch_correlations(config.project_root)
+                legacy_top20 = _legacy_top20_recall(config.project_root)
                 readiness = _readiness_assessment(
-                    detector_table, random_table, branch_table, zero_stats, correlations
+                    detector_table, random_table, branch_table, zero_stats, correlations,
+                    legacy_top20,
                 )
                 write_refined_summary(
                     paths.summary_path,
@@ -724,6 +751,7 @@ def execute_task2a(config: Task2AConfig) -> Task2AResult:
                     random_table=random_table,
                     branch_table=branch_table,
                     legacy_branch_correlations=legacy_correlations,
+                    legacy_top20_recall=legacy_top20,
                     training={
                         "best_epoch": training.best_epoch,
                         "best_validation_loss": training.best_validation_loss,

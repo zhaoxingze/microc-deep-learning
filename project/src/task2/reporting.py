@@ -314,6 +314,7 @@ def write_refined_summary(
     random_table: pd.DataFrame,
     branch_table: pd.DataFrame,
     legacy_branch_correlations: Mapping[str, float],
+    legacy_top20_recall: Mapping[str, float],
     training: Mapping[str, object],
     zero_axis: Mapping[str, float],
     replicate_consistency: Mapping[str, float],
@@ -371,6 +372,11 @@ def write_refined_summary(
         "4. **Shape normalization:** genome O/E → background-train clip → log1p → per-window valid-pixel median/MAD normalization → fixed [-10, 10] winsorization.",
         "5. **Does AE focus more on shape?** This is diagnosed, not assumed, by the branch-correlation change and the separate Shape-only recall.",
         f"6. **Correlation change:** refined Pearson {refined_pearson:.6f}; refined Spearman {refined_spearman:.6f}.",
+        "   Original legacy Full Top-20% recall was "
+        f"Overall={float(legacy_top20_recall.get('overall_recall', float('nan'))):.6f}, "
+        f"CHIN={float(legacy_top20_recall.get('CHIN_recall', float('nan'))):.6f}, "
+        f"OPCID={float(legacy_top20_recall.get('OPCID_recall', float('nan'))):.6f}, "
+        f"CHID={float(legacy_top20_recall.get('CHID_recall', float('nan'))):.6f}.",
         f"7. **OR-Max Top-20% recall:** {metric('or_max', 'overall_recall')}.",
         f"8. **Legacy Mean Top-20% recall with refined shape input:** {metric('legacy_mean', 'overall_recall')}.",
         f"9. **Positive-Sum Top-20% recall:** {metric('positive_sum', 'overall_recall')}.",

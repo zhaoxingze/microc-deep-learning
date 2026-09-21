@@ -93,6 +93,8 @@ def test_refined_diagnostic_figures_and_summary_are_created(tmp_path) -> None:
         tmp_path / "summary.md", mode="full", detector_table=detector,
         random_table=random, branch_table=branch,
         legacy_branch_correlations={"pearson": -0.8, "spearman": -0.9},
+        legacy_top20_recall={"overall_recall": 0.5, "CHIN_recall": 0.4,
+                             "OPCID_recall": 0.7, "CHID_recall": 0.6},
         training={"best_epoch": 47, "best_validation_loss": 0.25},
         zero_axis={"all_rate": 0.1, "top_rate": 0.1, "enrichment": 1.0},
         replicate_consistency={"pearson": 0.9, "spearman": 0.8},
@@ -103,6 +105,7 @@ def test_refined_diagnostic_figures_and_summary_are_created(tmp_path) -> None:
     assert all(path.stat().st_size > 0 for path in figures)
     text = summary.read_text(encoding="utf-8-sig")
     assert "primary_detector = OR_MAX" in text
+    assert "Original legacy Full Top-20%" in text
     assert "Task2A detector still needs refinement." in text
 
 
