@@ -1,0 +1,336 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-09-23T07:34:56.371195+00:00",
+  "configuration": {
+    "version": "Task2B-Hybrid-Shape-Representation-v1",
+    "mode": "full",
+    "seed": 20260920,
+    "task2a_final_protocol_sha256": "15075279e14de5aa398f0dbe1c2cc1b17366af354811c394ad23d6536b819369",
+    "candidate_list_sha256": "635d13d8fe5c091cb779bc78079579f119883ffd29128606bda57138910a0df3",
+    "task1_checkpoint_sha256": "3355bee0cf28754a055b83e48dd39727b03eae557073e2755d55f5dc8c28233d",
+    "task1_selected_input_type": "raw",
+    "ae_checkpoint_sha256": {
+      "small": "b0bf6b569e3adae316d6b6362c1e0f7e1bbc9d897d34bda3896789c78e096a62",
+      "medium": "4095f5da03099a7b907924ee6d01be71d4a664676bb2c3a721e3e5ca962a0eff",
+      "large": "a0a451f6e48950d1b7d3f97914f4b6022bf8dbe0fc4c6f896e2ae3cd204e8e0b"
+    },
+    "source_data_sha256": {
+      "expected": "157ae6c5e1b96aeeb0b092f1a9e466aee109ff5a45dce497eb1675a4b9e80122",
+      "large_background": "a0beb4f92496d84a717e6b1434f5baae5085cc496dfd90dc9b7c84271d504600"
+    },
+    "cnn_feature_layer": "classifier[0:3]: Flatten -> Linear(128,hidden) -> ReLU; before Dropout and final logits",
+    "ae_pooling": "AdaptiveAvgPool2d(1) on encoder output, then flatten",
+    "feature_dimensions": {
+      "cnn": 64,
+      "small": 64,
+      "medium": 64,
+      "large": 64
+    },
+    "fused_dimension": 256,
+    "scaler_fitting": "unlabeled Known+strict Background reference only; separate StandardScaler per feature block",
+    "background_reference": "344 strict known-disjoint large windows; deterministic >=4800 bp within-chrom center gap; seed 20260920; overlapping windows and AE-train reuse audited",
+    "pca": {
+      "n_components": 2,
+      "svd_solver": "full",
+      "fit": "reference+candidate standardized fused"
+    },
+    "umap": {
+      "n_components": 2,
+      "n_neighbors": 15,
+      "min_dist": 0.1,
+      "metric": "euclidean",
+      "random_state": 20260920,
+      "visualization_only": true
+    },
+    "linear_probe": {
+      "model": "LogisticRegression",
+      "class_weight": "balanced",
+      "max_iter": 2000,
+      "n_splits": 5,
+      "groups": "chrom:floor(center/128000)",
+      "splitter": "GroupKFold with training intervals crossing test boundaries purged",
+      "threshold": 0.5
+    },
+    "software_versions": {
+      "torch": "2.14.0+cpu",
+      "sklearn": "1.9.0",
+      "umap_learn": "0.5.12"
+    },
+    "prior_cnn_supervision_overlaps_known_reference": true,
+    "task2c_executed": false
+  },
+  "environment": {
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "numpy": "2.4.4",
+    "pandas": "2.3.3"
+  },
+  "statistics": {
+    "n_candidates": 231,
+    "n_reference_known": 344,
+    "n_reference_background": 344,
+    "probe": [
+      {
+        "representation": "CNN-only",
+        "n_folds": 5,
+        "accuracy_mean": 0.791841859845457,
+        "accuracy_std": 0.028462289924594694,
+        "balanced_accuracy_mean": 0.7957261785721244,
+        "balanced_accuracy_std": 0.031093109175682827,
+        "roc_auc_mean": 0.8997804499846991,
+        "roc_auc_std": 0.020846915211773752,
+        "pr_auc_mean": 0.9109465522521658,
+        "pr_auc_std": 0.026871920101034473
+      },
+      {
+        "representation": "AE-only",
+        "n_folds": 5,
+        "accuracy_mean": 0.813843591793232,
+        "accuracy_std": 0.015116281140505651,
+        "balanced_accuracy_mean": 0.8200301961761932,
+        "balanced_accuracy_std": 0.019730973504097325,
+        "roc_auc_mean": 0.9052008674608963,
+        "roc_auc_std": 0.022459505210388343,
+        "pr_auc_mean": 0.9063946404869178,
+        "pr_auc_std": 0.027908234135508747
+      },
+      {
+        "representation": "Fused",
+        "n_folds": 5,
+        "accuracy_mean": 0.8343638422595256,
+        "accuracy_std": 0.015114029172263399,
+        "balanced_accuracy_mean": 0.8401470345425072,
+        "balanced_accuracy_std": 0.01967807368917361,
+        "roc_auc_mean": 0.9254219983730518,
+        "roc_auc_std": 0.014280996898125573,
+        "pr_auc_mean": 0.9338509840343058,
+        "pr_auc_std": 0.013985701202270127
+      }
+    ],
+    "pca_explained_variance_ratio": [
+      0.364487886428833,
+      0.19206972420215607
+    ],
+    "pca_map_diagnostics": {
+      "reference_centroid_separation_over_spread": 0.22059866786003113,
+      "candidate_occupied_quadrants": 4,
+      "candidate_count": 231
+    },
+    "umap_map_diagnostics": {
+      "reference_centroid_separation_over_spread": 0.3796846270561218,
+      "candidate_occupied_quadrants": 4,
+      "candidate_count": 231
+    },
+    "replicate_cosine_means": {
+      "cnn": 0.678990756199335,
+      "small": 0.8826925742190627,
+      "medium": 0.9400901639173359,
+      "large": 0.953277837012565,
+      "fused": 0.892722914443657
+    },
+    "padded_extraction_records": 0,
+    "background_reference_audit": {
+      "strict_pool_count": 1059,
+      "strict_pool_max_mutually_nonoverlapping_count": 178,
+      "selected_count": 344,
+      "selected_min_center_gap_bp": 4800,
+      "selected_adjacent_interval_overlap_pairs": 231,
+      "selected_reused_ae_train_count": 234
+    },
+    "probe_train_rows_purged_per_fold": [
+      1,
+      0,
+      0,
+      0,
+      1
+    ],
+    "completion": {
+      "mode": "full",
+      "task2b_complete": true,
+      "candidate_embeddings_aligned": true,
+      "reference_embeddings_aligned": true,
+      "genomic_probe_group_leakage_zero": true,
+      "genomic_probe_interval_leakage_zero": true,
+      "known_labels_used_for_embedding_or_scaler_selection": false,
+      "prior_task1_cnn_supervision_overlaps_known_reference": true,
+      "independent_cnn_probe_generalization_claim": false,
+      "task2c_executed": false
+    }
+  },
+  "inputs": {
+    "F:\\Micro-C\\project\\outputs\\task2a_final\\task2a_final_manifest.json": {
+      "size_bytes": 8638,
+      "sha256": "a21de055b596570c566907209d63bc24ef396cb97119fbbaffa36cf79b342963"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_final\\frozen_proposal_protocol.json": {
+      "size_bytes": 1735,
+      "sha256": "15075279e14de5aa398f0dbe1c2cc1b17366af354811c394ad23d6536b819369"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_final\\task2a_final_candidates.csv": {
+      "size_bytes": 47735,
+      "sha256": "635d13d8fe5c091cb779bc78079579f119883ffd29128606bda57138910a0df3"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_final\\task2a_finalization.json": {
+      "size_bytes": 521,
+      "sha256": "a50671062924af687401e844d95248d27409312faaa4155d6ffa135b09b0deec"
+    },
+    "F:\\Micro-C\\project\\outputs\\task1\\task1_manifest.json": {
+      "size_bytes": 3503,
+      "sha256": "7122c256a24f6cca43db0d618255ce4d3e0471536f4072dd86871c676e88c7ee"
+    },
+    "F:\\Micro-C\\project\\outputs\\task1\\input_comparison.csv": {
+      "size_bytes": 1088,
+      "sha256": "54d739b936ed6f91b8eadc6ed3456abb7a2c6f0f0c8f75eefce527b66a999db2"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale\\task2a_multiscale_manifest.json": {
+      "size_bytes": 26529,
+      "sha256": "0b090fb5b6e89dec3b542c1118e52d4303224de96d5fcd7f88d947361fb4235b"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale\\frozen_multiscale_protocol.json": {
+      "size_bytes": 6669,
+      "sha256": "734284c9564b8146622e3bd2a61e21360c3c91612185090503b56a3b379e6d01"
+    },
+    "F:\\Micro-C\\project\\data\\task2_multiscale\\genome_expected_max128.npz": {
+      "size_bytes": 2550,
+      "sha256": "157ae6c5e1b96aeeb0b092f1a9e466aee109ff5a45dce497eb1675a4b9e80122"
+    },
+    "F:\\Micro-C\\project\\data\\task2_multiscale\\large\\background_split.csv": {
+      "size_bytes": 192448,
+      "sha256": "a0beb4f92496d84a717e6b1434f5baae5085cc496dfd90dc9b7c84271d504600"
+    },
+    "F:\\Micro-C\\project\\data\\processed\\structures.csv": {
+      "size_bytes": 37408,
+      "sha256": "8ae5e792482a06a32a3fa85705505e5bbc1cf5957b0fca78ccee8e09bd51d7a6"
+    },
+    "F:\\Micro-C\\micro-c数据\\GSE272159_37C_rep1.mapq_30.10.cool": {
+      "size_bytes": 482254398,
+      "sha256": "0256e10da36abfe0238bf16952bc43bc78365f43c201e6e3ba0c49bd243549a8"
+    },
+    "F:\\Micro-C\\micro-c数据\\GSE272159_37C_rep2.mapq_30.10.cool": {
+      "size_bytes": 468345755,
+      "sha256": "ede9b4f7c0c6b40c8f098e43cdd0abbc0a8987f05e8b37051a5e3cbf143ad106"
+    },
+    "F:\\Micro-C\\project\\outputs\\task1\\raw\\best_model.pth": {
+      "size_bytes": 1242741,
+      "sha256": "3355bee0cf28754a055b83e48dd39727b03eae557073e2755d55f5dc8c28233d"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale\\small\\best_model.pth": {
+      "size_bytes": 573237,
+      "sha256": "b0bf6b569e3adae316d6b6362c1e0f7e1bbc9d897d34bda3896789c78e096a62"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale\\medium\\best_model.pth": {
+      "size_bytes": 573237,
+      "sha256": "4095f5da03099a7b907924ee6d01be71d4a664676bb2c3a721e3e5ca962a0eff"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale\\large\\best_model.pth": {
+      "size_bytes": 573237,
+      "sha256": "a0a451f6e48950d1b7d3f97914f4b6022bf8dbe0fc4c6f896e2ae3cd204e8e0b"
+    },
+    "F:\\Micro-C\\project\\src\\task2b\\pipeline.py": {
+      "size_bytes": 22923,
+      "sha256": "ca7cf763c2bec47ecd7e1c249b947f733da18c62fd220d657aa5001b1b14d543"
+    },
+    "F:\\Micro-C\\project\\src\\task2b\\features.py": {
+      "size_bytes": 7501,
+      "sha256": "38bb32e75afbbfad70f92bc79926a5b71eabd29805e658b395453de82936c560"
+    },
+    "F:\\Micro-C\\project\\src\\task2b\\evaluation.py": {
+      "size_bytes": 12733,
+      "sha256": "c6f1b76011955ba2e43afd476a710f228658a6097e78440d399bf5416c8eb98f"
+    },
+    "F:\\Micro-C\\project\\src\\task2b\\reporting.py": {
+      "size_bytes": 9533,
+      "sha256": "6ff9ad88d4fbae3ec31af71aab122bcebc9200a265532bb8e52e3ab7d483d515"
+    },
+    "F:\\Micro-C\\project\\src\\task1\\model.py": {
+      "size_bytes": 1451,
+      "sha256": "f1e4c1a9f8e06cff06ecf367cf99c6f68d77169b559ebd688ad5a219a10e6d47"
+    }
+  },
+  "outputs": {
+    "F:\\Micro-C\\project\\outputs\\task2b\\candidate_embeddings.npy": {
+      "size_bytes": 236672,
+      "sha256": "5bd49f4829cd2dfd8dba37bcf218f9675c79073d4505cae12da8761944e98117"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\candidate_embeddings_rep1.npy": {
+      "size_bytes": 236672,
+      "sha256": "1c6efe02086e52725d18b516f48f02133b49518d79bd36668c017dbea6aa2480"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\candidate_embeddings_rep2.npy": {
+      "size_bytes": 236672,
+      "sha256": "951259561279bc31ddb4b48b55b3a53877f7eddbf9f6df09a4ef73493d29cf9e"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\reference_embeddings.npy": {
+      "size_bytes": 704640,
+      "sha256": "01568869e99568668454c39bb4379b9956a3cb431fb92b1ecf0d449c13868cc8"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\candidate_embedding_metadata.csv": {
+      "size_bytes": 77602,
+      "sha256": "ed6fb3d7e7f7d306619cb61b6a512f1b93fd451bd0803bfbe74c19bf482e6a53"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\reference_embedding_metadata.csv": {
+      "size_bytes": 52856,
+      "sha256": "e880ad97e74deb80e538e958d2591c1abc899f531d125844a88ddcfd081c14e8"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\known_vs_background_linear_probe.csv": {
+      "size_bytes": 656,
+      "sha256": "e93ec3645d87c22bf455681d9b7da102d173a5a0bcdcd333c562b908583f7d7b"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\representation_ablation.csv": {
+      "size_bytes": 656,
+      "sha256": "e93ec3645d87c22bf455681d9b7da102d173a5a0bcdcd333c562b908583f7d7b"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\linear_probe_folds.csv": {
+      "size_bytes": 7126,
+      "sha256": "458dadf997cc2647c7d453003b35dcda194d2bd19b3427b5511a1cb84fe6a5c9"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\candidate_embedding_replicate_consistency.csv": {
+      "size_bytes": 38616,
+      "sha256": "efb61df2d26fbdfb424e7522c73b4057f540ffb3fd319c8c78199eabc6d93572"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\pca_coordinates.csv": {
+      "size_bytes": 67617,
+      "sha256": "5b7a2e6b16f861633389c3d7051b7d91afe2bfd856c99522d30b6701dd65c117"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\umap_coordinates.csv": {
+      "size_bytes": 68214,
+      "sha256": "6d4fbb81469501e2efc9086b0d9af688ac4f01619bafadb7c2c71d9fc594327c"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\pca_explained_variance.csv": {
+      "size_bytes": 150,
+      "sha256": "4b17588548c836b2cc97ad199df9f0e7715072778257ea8d1614589a9b1373eb"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\feature_scaler.pkl": {
+      "size_bytes": 7361,
+      "sha256": "e62f126e09c4204ba7f2b235ea9f1b3921a31e63c114cf08eb227b6914bd75fd"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\pca_model.pkl": {
+      "size_bytes": 4031,
+      "sha256": "0697cbbb975709b0a45c10ba0ab4c595e08be464b53c57ec315d7c428b044af5"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\umap_model.pkl": {
+      "size_bytes": 1112617,
+      "sha256": "6408b9f632d08bfc83f4409aa9a04f0c626a0d0f0292f2b155d92395c0809c15"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\pca_reference_candidates.png": {
+      "size_bytes": 149632,
+      "sha256": "d44b914578c77bb5bf4ad12fdd8aa4903aab468f127a2b74972b9ff87173d86c"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\pca_explained_variance.png": {
+      "size_bytes": 34240,
+      "sha256": "b4c707594f5b7bf84496d5e43c2d2ad3239d0907f77d2b800f7360ae9c83a619"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\umap_reference_candidates.png": {
+      "size_bytes": 198667,
+      "sha256": "d962105395db0bb5a3be3a414e9cbf97ecdc353da03b5ea9656dd3a39d42716b"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\task2b_completion.json": {
+      "size_bytes": 440,
+      "sha256": "91c9ae70b013a84913556dfa8897317e7b68adcd803d432a1a216cf37af2d41f"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\task2b_summary.md": {
+      "size_bytes": 4011,
+      "sha256": "db68216473b0d4ea02b48b71231e452d333331f1aa1d59ed3bc8c46baa765313"
+    }
+  }
+}

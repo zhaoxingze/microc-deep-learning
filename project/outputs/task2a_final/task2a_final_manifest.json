@@ -1,0 +1,234 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-09-23T07:20:33.385372+00:00",
+  "configuration": {
+    "version": "Task2A-Final-independent-six-channel-v1",
+    "purpose": "high-recall proposal generation; no novelty determination",
+    "scales": [
+      {
+        "scale": "small",
+        "window_bp": 3200,
+        "step_bp": 400,
+        "target_bin_size": 100
+      },
+      {
+        "scale": "medium",
+        "window_bp": 6400,
+        "step_bp": 800,
+        "target_bin_size": 100
+      },
+      {
+        "scale": "large",
+        "window_bp": 12800,
+        "step_bp": 1600,
+        "target_bin_size": 100
+      }
+    ],
+    "channels": [
+      "small_density",
+      "small_shape",
+      "medium_density",
+      "medium_shape",
+      "large_density",
+      "large_shape"
+    ],
+    "channel_p": "sqrt(rep1_empirical_p * rep2_empirical_p); equivalent to mean replicate -log10(p)",
+    "proposal_threshold": 0.05,
+    "channel_nms": "per channel; ascending p; center distance strictly < window_bp/2 suppressed",
+    "cross_channel_merge": "transitive connected components of positive interval overlap",
+    "representative_tie_break": [
+      "lowest empirical p",
+      "highest replicate-min anomaly",
+      "chrom/start/end/window_id/channel ascending"
+    ],
+    "known_labels_used_for_selection": false,
+    "known_recall_used_as_performance_gate": false,
+    "source_task2a_manifest_sha256": "0b090fb5b6e89dec3b542c1118e52d4303224de96d5fcd7f88d947361fb4235b",
+    "source_score_sha256": {
+      "small": "05d3b7245f9615fda8884b1de1efec60099834136ebd0996bddbc8af67f7502c",
+      "medium": "48ce62de1d6ea76df1bdf03c6e34653565697d4049eaa66c5d2341c63175be13",
+      "large": "7da72bfb36eb07ad43e11bd7ae3bb7fd8aa1dd989bfd0d42f886ce97075d6322"
+    },
+    "proposal_code_sha256": "6d9a0009b15aca21cc3ddaac576867e00eed2420ec9ea727479d981b9b5259f5",
+    "seed": 20260920
+  },
+  "environment": {
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "numpy": "2.4.4",
+    "pandas": "2.3.3"
+  },
+  "statistics": {
+    "channel_peak_counts": {
+      "small_density": 244,
+      "small_shape": 226,
+      "medium_density": 114,
+      "medium_shape": 72,
+      "large_density": 51,
+      "large_shape": 69
+    },
+    "n_proposals": 776,
+    "n_candidates": 231,
+    "coverage_bp": 2141200,
+    "coverage_fraction": 0.4613012780794424,
+    "calibration_tail_audit": [
+      {
+        "channel": "small_density",
+        "n_calibration_windows": 1054,
+        "n_below_fixed_threshold": 52,
+        "observed_tail_fraction": 0.04933586337760911,
+        "fixed_threshold": 0.05
+      },
+      {
+        "channel": "small_shape",
+        "n_calibration_windows": 1054,
+        "n_below_fixed_threshold": 39,
+        "observed_tail_fraction": 0.03700189753320683,
+        "fixed_threshold": 0.05
+      },
+      {
+        "channel": "medium_density",
+        "n_calibration_windows": 431,
+        "n_below_fixed_threshold": 20,
+        "observed_tail_fraction": 0.04640371229698376,
+        "fixed_threshold": 0.05
+      },
+      {
+        "channel": "medium_shape",
+        "n_calibration_windows": 431,
+        "n_below_fixed_threshold": 15,
+        "observed_tail_fraction": 0.03480278422273782,
+        "fixed_threshold": 0.05
+      },
+      {
+        "channel": "large_density",
+        "n_calibration_windows": 147,
+        "n_below_fixed_threshold": 6,
+        "observed_tail_fraction": 0.04081632653061224,
+        "fixed_threshold": 0.05
+      },
+      {
+        "channel": "large_shape",
+        "n_calibration_windows": 147,
+        "n_below_fixed_threshold": 7,
+        "observed_tail_fraction": 0.047619047619047616,
+        "fixed_threshold": 0.05
+      }
+    ],
+    "recall": [
+      {
+        "type": "overall",
+        "n_known": 344,
+        "center_recall": 0.47674418604651164,
+        "interval_overlap_recall": 0.625
+      },
+      {
+        "type": "CHIN",
+        "n_known": 250,
+        "center_recall": 0.42,
+        "interval_overlap_recall": 0.556
+      },
+      {
+        "type": "OPCID",
+        "n_known": 68,
+        "center_recall": 0.7058823529411765,
+        "interval_overlap_recall": 0.8529411764705882
+      },
+      {
+        "type": "CHID",
+        "n_known": 26,
+        "center_recall": 0.4230769230769231,
+        "interval_overlap_recall": 0.6923076923076923
+      }
+    ],
+    "finalization": {
+      "checks": {
+        "proposal_protocol_frozen": true,
+        "candidate_regions_valid": true,
+        "task2a_artifacts_complete": true,
+        "rep1_rep2_accessible": true,
+        "no_train_val_calibration_leakage": true,
+        "known_labels_not_used_for_proposals": true
+      },
+      "protocol_frozen": true,
+      "candidate_regions_valid": true,
+      "known_label_tuning": false,
+      "ready_for_task2b": true,
+      "background_known_overlap_zero": true,
+      "task2a_known_recall_is_performance_gate": false,
+      "task2b_executed": false
+    }
+  },
+  "inputs": {
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale\\task2a_multiscale_manifest.json": {
+      "size_bytes": 26529,
+      "sha256": "0b090fb5b6e89dec3b542c1118e52d4303224de96d5fcd7f88d947361fb4235b"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale\\frozen_multiscale_protocol.json": {
+      "size_bytes": 6669,
+      "sha256": "734284c9564b8146622e3bd2a61e21360c3c91612185090503b56a3b379e6d01"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale\\small\\window_scores.csv": {
+      "size_bytes": 14785777,
+      "sha256": "05d3b7245f9615fda8884b1de1efec60099834136ebd0996bddbc8af67f7502c"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale\\medium\\window_scores.csv": {
+      "size_bytes": 7423779,
+      "sha256": "48ce62de1d6ea76df1bdf03c6e34653565697d4049eaa66c5d2341c63175be13"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale\\large\\window_scores.csv": {
+      "size_bytes": 3699711,
+      "sha256": "7da72bfb36eb07ad43e11bd7ae3bb7fd8aa1dd989bfd0d42f886ce97075d6322"
+    },
+    "F:\\Micro-C\\project\\data\\processed\\structures.csv": {
+      "size_bytes": 37408,
+      "sha256": "8ae5e792482a06a32a3fa85705505e5bbc1cf5957b0fca78ccee8e09bd51d7a6"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale\\background_split_leakage_audit.csv": {
+      "size_bytes": 392,
+      "sha256": "89878b79f0fb37850a3f330d927c4decc423224d71336f6ccdac12fa6f0bc287"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale\\background_known_interval_overlap_audit.csv": {
+      "size_bytes": 265,
+      "sha256": "91d1767028d6d6e9a03be64aec4f803244c8544103650dcbe27296f70668d451"
+    },
+    "F:\\Micro-C\\project\\src\\task2\\final_pipeline.py": {
+      "size_bytes": 14169,
+      "sha256": "be77ef60c7e51368cbd6489b4ff7aef9fe7e08920a8bcb33182a6acb407a1827"
+    },
+    "F:\\Micro-C\\project\\src\\task2\\final_proposals.py": {
+      "size_bytes": 7672,
+      "sha256": "6d9a0009b15aca21cc3ddaac576867e00eed2420ec9ea727479d981b9b5259f5"
+    }
+  },
+  "outputs": {
+    "F:\\Micro-C\\project\\outputs\\task2a_final\\frozen_proposal_protocol.json": {
+      "size_bytes": 1735,
+      "sha256": "15075279e14de5aa398f0dbe1c2cc1b17366af354811c394ad23d6536b819369"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_final\\channel_proposals.csv": {
+      "size_bytes": 144401,
+      "sha256": "6fd1cff131e058843e7b6dd85abdf2382e7855a3da1ad9ada1a788cbfd4cfe8c"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_final\\task2a_final_candidates.csv": {
+      "size_bytes": 47735,
+      "sha256": "635d13d8fe5c091cb779bc78079579f119883ffd29128606bda57138910a0df3"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_final\\task2a_final_recall.csv": {
+      "size_bytes": 210,
+      "sha256": "81b338f312ef61ef040692350cc3bfe4430e690fdae11413e17c6fc255c3956c"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_final\\calibration_tail_audit.csv": {
+      "size_bytes": 376,
+      "sha256": "aecc172b881bd7128c77135e5de11a969b8a81a98e3477357b57f58836970409"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_final\\task2a_finalization.json": {
+      "size_bytes": 521,
+      "sha256": "a50671062924af687401e844d95248d27409312faaa4155d6ffa135b09b0deec"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_final\\task2a_final_summary.md": {
+      "size_bytes": 3982,
+      "sha256": "d1d1c9a14902cb09f52963407ff93b277a952a7e3dae9fc1a3896013f1ffbb6c"
+    }
+  }
+}

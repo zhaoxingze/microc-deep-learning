@@ -1,0 +1,9 @@
+{
+  "mode": "full",
+  "calibration_valid": true,
+  "failure_reason": "",
+  "pearson_floor": 0.31186150698910403,
+  "spearman_floor": 0.27573844201209236,
+  "n_valid_known": 344,
+  "rule": "valid Known canonical Pearson and Spearman 5th percentile"
+}

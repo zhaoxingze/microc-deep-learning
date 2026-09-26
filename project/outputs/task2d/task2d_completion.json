@@ -1,0 +1,18 @@
+{
+  "mode": "full",
+  "checks": {
+    "upstream_artifacts_frozen": true,
+    "frozen_task2d_protocol": true,
+    "all_eligible_candidates_evaluated": true,
+    "known_positive_controls_evaluated": true,
+    "background_controls_evaluated": true,
+    "known_control_calibration_valid": true,
+    "cluster_reproducibility_complete": true,
+    "noise_and_clustered_candidate_tables_complete": true,
+    "candidate_final_status_complete": true,
+    "no_model_training_or_upstream_modification": true
+  },
+  "task2d_complete": true,
+  "scientific_full_result": true,
+  "task2_finalized": false
+}

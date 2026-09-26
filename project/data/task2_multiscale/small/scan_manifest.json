@@ -1,0 +1,32 @@
+{
+  "complete": true,
+  "scale": "small",
+  "window_bp": 3200,
+  "step_bp": 400,
+  "target_bin_size": 100,
+  "matrix_bins": 32,
+  "sources": {
+    "rep1": {
+      "path": "F:\\Micro-C\\micro-c\u6570\u636e\\GSE272159_37C_rep1.mapq_30.10.cool",
+      "sha256": "0256e10da36abfe0238bf16952bc43bc78365f43c201e6e3ba0c49bd243549a8"
+    },
+    "rep2": {
+      "path": "F:\\Micro-C\\micro-c\u6570\u636e\\GSE272159_37C_rep2.mapq_30.10.cool",
+      "sha256": "ede9b4f7c0c6b40c8f098e43cdd0abbc0a8987f05e8b37051a5e3cbf143ad106"
+    }
+  },
+  "artifacts": {
+    "metadata.csv": {
+      "size_bytes": 3648790,
+      "sha256": "edd7ab6050643e00b4a3b55a4295ac59aa80cc395598607105689336a13ca718"
+    },
+    "genome_windows_rep1.npy": {
+      "size_bytes": 47501440,
+      "sha256": "52ce7b7378115015767424762316668e1a95d6b3f1f8bae00d0a89b9bd06bcdd"
+    },
+    "genome_windows_rep2.npy": {
+      "size_bytes": 47501440,
+      "sha256": "df55b174f1235a48c07748bbb88b80043d9ce303e509577924d42cd3a57f2143"
+    }
+  }
+}

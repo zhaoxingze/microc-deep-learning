@@ -1,0 +1,7 @@
+﻿phase,scale,peak_count,peak_fraction,top20_count,total_regions
+before,small,1589,0.8589189189189189,20,1850
+before,medium,185,0.1,0,1850
+before,large,76,0.04108108108108108,0,1850
+after,small,1587,0.8606290672451193,20,1844
+after,medium,178,0.09652928416485901,0,1844
+after,large,79,0.042841648590021694,0,1844

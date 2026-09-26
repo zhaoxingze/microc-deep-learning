@@ -1,0 +1,13 @@
+﻿scope,split_a,split_b,overlap_count
+combined,train,validation,0
+combined,train,calibration,0
+combined,validation,calibration,0
+small,train,validation,0
+small,train,calibration,0
+small,validation,calibration,0
+medium,train,validation,0
+medium,train,calibration,0
+medium,validation,calibration,0
+large,train,validation,0
+large,train,calibration,0
+large,validation,calibration,0

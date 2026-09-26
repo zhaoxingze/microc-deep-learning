@@ -1,0 +1,10 @@
+{
+  "input_type": "raw",
+  "checkpoint": "F:\\Micro-C\\project\\outputs\\task1\\raw\\best_model.pth",
+  "selection": {
+    "correct_per_class": 5,
+    "incorrect_per_class": 3
+  },
+  "diagonal_band": 2,
+  "n_structures": 18
+}

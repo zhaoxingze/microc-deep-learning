@@ -1,0 +1,25 @@
+# Task2D and Task2 finalization design
+
+The complete user specification is the pasted Task2D request dated 2026-09-24. This document resolves implementation details without changing its scientific gates. Task2A/B/C manifests and completion artifacts are immutable inputs; Task2D never trains or modifies upstream models, embeddings, proposals, or cluster assignments.
+
+## Input boundary and frozen protocol
+
+Validate the three upstream manifests, completion flags, cross-manifest candidate/embedding links, candidate row IDs, and Task2C cluster membership before any correlation. Record hashes of the candidate list, embedding, membership, Task2C manifest, genome-wide expected, and both Cooler files. Freeze `outputs/task2d/frozen_task2d_protocol.json` before Full candidate correlation. It fixes a 100 bp target bin, representative-scale primary windows (3200/6400/12800 bp), canonical 6400 bp, separate replicate genome-wide E(d), no O/E clipping for correlation, `i<j and |i-j|>2` primary mask, full-upper auxiliary mask, Pearson/Spearman, minimum 10 valid masked pixels, the Known 5th-percentile floors, and 80% valid-member strict-cluster fraction. Missing/zero expected distances are invalid, not imputed as O/E zero. Reuse the same genomic center for both replicates.
+
+## Reproducibility measurement
+
+For each candidate use frozen `best_scale` and representative center for primary, plus canonical 6400 bp. For 344 Known and 344 Background reference rows use canonical 6400 bp. Read raw unbalanced Cooler matrices at the same coordinates for rep1/rep2, normalize each by its own genome-wide expected, and retain only finite paired pixels with positive expected. Calculate Pearson and Spearman on the off-diagonal upper mask; a constant vector or fewer than ten valid pixels produces NaN with explicit invalid reason, never zero. Also save full-upper correlations, masked cosine similarity, and NRMSE using pooled IQR plus 1e-12. Audit any all-zero row/column in each raw replicate, masked finite fraction, and quality warnings without dropping the sample. Candidate primary correlations are the formal outcome; canonical values are diagnostics.
+
+## Controls, calibration and status
+
+Compute Known and Background results by the same measurement function. The valid Known canonical Pearson and Spearman 5th percentiles are the pre-registered floors; report median, IQR, 5th/25th/75th/95th per Known type. A nonfinite or negative floor is a control-calibration failure: preserve continuous measurements and stop binary candidate filtering/finalization instead of inventing a replacement threshold. A valid candidate passes only if both primary metrics reach their floors. Compute candidate pools dynamically from Task2C rows with **both** Known-overlap fields false. Strict novel membership additionally needs the frozen Task2C novel-like flag, a cluster with at least 5 candidates and zero Known, no genomic overlap for claimed members, and at least 80% of valid candidate members passing. A noise candidate can only be a reproducible unclustered follow-up, never a novel class.
+
+Final status precedence: insufficient correlation quality; genomic Known overlap; qualifying strict novel member; reproducible or low-reproducibility unannotated noise; reproducible or low-reproducibility unannotated clustered, distinguishing Known-containing/known-like clusters. No status modifies Task2C. Save continuous metrics in all candidate tables. `strict_novel_candidates.csv` has headers even when empty. Rank follow-up rows by pass, primary Spearman, primary Pearson, stable coordinates; Known type or appearance never enters ranking.
+
+## Presentation and completion
+
+Per final follow-up candidate, render paired rep1/rep2 `log1p(O/E)` and absolute difference from identical coordinates. A single visualization vmax is the 99.5th percentile of finite display pixels across all follow-up replicates, and is absent with an explicit note when there are no follow-ups. Create distribution figures and a gallery without allowing any plot to affect selection. Smoke writes to a separate `outputs/pipeline_runs/task2d_smoke/outputs/task2d` directory and is non-scientific. Full Task2D emits data, diagnostics, summary, and manifest; `finalize_task2.py --verify` validates all artifacts and writes final tables, figures, report, manifest, completion. `task2_complete` means all workflow checks passed, independent of a nonempty strict novel list; `strict_novel_structure_detected` is separate. No Task3 action.
+
+## Risks and guardrails
+
+The same Known set had earlier supervised/development exposure; positive-control floors are operational references, not independent discovery validation. Background may be reproducible and overlaps among background windows make them correlated. A two-replicate correlation is stability, not structure identity. Matrices may have zero axes or undefined correlations; report rather than delete/impute. Heatmap O/E display can be clipped by one global color scale, but formal correlation uses the raw finite O/E values.

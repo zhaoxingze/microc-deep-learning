@@ -72,7 +72,7 @@ class Task2AConfig:
     rep1_cool: Path
     rep2_cool: Path
     mode: Literal["smoke", "full"] = "smoke"
-    detector_version: Literal["legacy", "refined"] = "legacy"
+    detector_version: Literal["legacy", "refined", "calibrated", "multiscale"] = "legacy"
     dry_run: bool = False
     resume: bool = False
     chrom: str = "MG1655"
@@ -88,7 +88,7 @@ class Task2AConfig:
     def __post_init__(self) -> None:
         if self.mode not in {"smoke", "full"}:
             raise ValueError(f"Invalid Task 2A mode: {self.mode}")
-        if self.detector_version not in {"legacy", "refined"}:
+        if self.detector_version not in {"legacy", "refined", "calibrated", "multiscale"}:
             raise ValueError(f"Invalid Task 2A detector version: {self.detector_version}")
 
     @property
@@ -99,13 +99,13 @@ class Task2AConfig:
     def epochs(self) -> int:
         if self.mode == "smoke":
             return 3
-        return 120 if self.detector_version == "refined" else 60
+        return 120 if self.detector_version in {"refined", "calibrated", "multiscale"} else 60
 
     @property
     def patience(self) -> int:
         if self.mode == "smoke":
             return 2
-        return 15 if self.detector_version == "refined" else 10
+        return 15 if self.detector_version in {"refined", "calibrated", "multiscale"} else 10
 
     @property
     def block_bp(self) -> int:
@@ -148,9 +148,13 @@ class Task2APaths:
             if config.detector_version == "refined"
             else "task2a_smoke"
         )
+        if config.detector_version == "calibrated":
+            smoke_name = "task2a_calibrated_smoke"
         workspace = source if config.mode == "full" else source / "outputs" / "pipeline_runs" / smoke_name
         data_root = workspace / "data" / "task2"
         output_name = "task2a_refined" if config.detector_version == "refined" else "task2a"
+        if config.detector_version == "calibrated":
+            output_name = "task2a_calibrated"
         output_root = workspace / "outputs" / output_name
         refined = config.detector_version == "refined"
         return cls(
@@ -165,10 +169,10 @@ class Task2APaths:
             rep1_array_path=data_root / "genome_windows_rep1.npy",
             rep2_array_path=data_root / "genome_windows_rep2.npy",
             expected_path=data_root / "genome_expected.npz",
-            background_path=data_root / "background_split.csv",
+            background_path=data_root / ("background_split_calibrated.csv" if config.detector_version == "calibrated" else "background_split.csv"),
             candidate_scores_path=output_root / "candidate_scores.csv",
             candidate_regions_path=output_root / (
-                "candidate_regions_or_max.csv" if refined else "top_candidate_regions.csv"
+                "candidate_regions.csv" if config.detector_version == "calibrated" else "candidate_regions_or_max.csv" if refined else "top_candidate_regions.csv"
             ),
             recall_path=output_root / "known_structure_recall.csv",
             random_path=output_root / "random_recall_baseline.csv",
@@ -179,10 +183,10 @@ class Task2APaths:
             detector_comparison_path=output_root / "detector_comparison.csv",
             random_comparison_path=output_root / "random_baseline_comparison.csv",
             summary_path=output_root / (
-                "task2a_refined_summary.md" if refined else "task2a_summary.md"
+                "task2a_calibrated_summary.md" if config.detector_version == "calibrated" else "task2a_refined_summary.md" if refined else "task2a_summary.md"
             ),
             manifest_path=output_root / (
-                "task2a_refined_manifest.json" if refined else "task2a_manifest.json"
+                "task2a_calibrated_manifest.json" if config.detector_version == "calibrated" else "task2a_refined_manifest.json" if refined else "task2a_manifest.json"
             ),
             log_dir=source / "outputs" / "logs",
         )
@@ -507,6 +511,12 @@ def _readiness_assessment(
 
 
 def execute_task2a(config: Task2AConfig) -> Task2AResult:
+    if config.detector_version == "multiscale":
+        from src.task2.multiscale_pipeline import execute_multiscale
+        return execute_multiscale(config)
+    if config.detector_version == "calibrated":
+        from src.task2.calibrated_pipeline import execute_calibrated
+        return execute_calibrated(config)
     started = time.monotonic()
     paths = Task2APaths.from_config(config)
     _validate_inputs(config, paths)

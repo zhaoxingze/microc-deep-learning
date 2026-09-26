@@ -1,0 +1,38 @@
+{
+  "input_type": "raw",
+  "seed": 20260920,
+  "epochs_requested": 60,
+  "epochs_ran": 28,
+  "batch_size": 32,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "patience": 10,
+  "exclude_zero_axis": false,
+  "train_replicates": "rep1,rep2",
+  "class_weights": [
+    0.4590476155281067,
+    1.6736111640930176,
+    4.462963104248047
+  ],
+  "best_epoch": 18,
+  "best_validation": {
+    "val_structure_macro_f1": 0.673015873015873,
+    "val_structure_loss": 0.5712066888809204,
+    "val_structure_accuracy": 0.7115384615384616
+  },
+  "participation": {
+    "train": {
+      "structures": 241,
+      "replicates": 482
+    },
+    "val": {
+      "structures": 52,
+      "replicates": 104
+    },
+    "test": {
+      "structures": 51,
+      "replicates": 102
+    }
+  },
+  "device": "cpu"
+}

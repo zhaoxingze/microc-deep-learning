@@ -1,0 +1,234 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-09-23T05:00:37.195699+00:00",
+  "configuration": {
+    "version": "Task2A.4-cross-scale-equalized",
+    "source_run": "Task2A.3-MultiScale-Full",
+    "mode": "full",
+    "calibration_counts": {
+      "small": 1054,
+      "medium": 431,
+      "large": 147
+    },
+    "min_calibration_n": 147,
+    "common_p_floor": 0.006756756756756757,
+    "equalized_max_anomaly": 2.1702617153949575,
+    "paired_branch_aggregation": "mean of available rep1 and rep2 common anomalies",
+    "within_scale_score": "max(paired density common anomaly, paired shape common anomaly)",
+    "cross_scale_score": "max across scale candidates via unchanged NMS",
+    "tie_break": [
+      "replicate_min_score descending",
+      "original_uncapped_tail_score descending",
+      "chrom/start/end/window_id ascending"
+    ],
+    "known_labels_used_for_ranking": false,
+    "threshold_searched": false,
+    "window_scanning_executed": false,
+    "genome_expected_recomputed": false,
+    "autoencoder_retrained": false,
+    "autoencoder_checkpoint_loaded": false,
+    "existing_empirical_p_values_reused": true,
+    "new_window_scale_added": false,
+    "known_recall_definition_changed": false,
+    "random_repetitions": 100,
+    "random_seed": 20260920,
+    "task2b_executed": false
+  },
+  "environment": {
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "numpy": "2.4.4",
+    "pandas": "2.3.3"
+  },
+  "statistics": {
+    "n_windows": 20286,
+    "n_candidate_regions": 1844,
+    "observed_max_common_anomaly": 2.1702617153949575,
+    "scale_contribution": [
+      {
+        "phase": "before",
+        "scale": "small",
+        "peak_count": 1589,
+        "peak_fraction": 0.8589189189189189,
+        "top20_count": 20,
+        "total_regions": 1850
+      },
+      {
+        "phase": "before",
+        "scale": "medium",
+        "peak_count": 185,
+        "peak_fraction": 0.1,
+        "top20_count": 0,
+        "total_regions": 1850
+      },
+      {
+        "phase": "before",
+        "scale": "large",
+        "peak_count": 76,
+        "peak_fraction": 0.04108108108108108,
+        "top20_count": 0,
+        "total_regions": 1850
+      },
+      {
+        "phase": "after",
+        "scale": "small",
+        "peak_count": 1587,
+        "peak_fraction": 0.8606290672451193,
+        "top20_count": 20,
+        "total_regions": 1844
+      },
+      {
+        "phase": "after",
+        "scale": "medium",
+        "peak_count": 178,
+        "peak_fraction": 0.09652928416485901,
+        "top20_count": 0,
+        "total_regions": 1844
+      },
+      {
+        "phase": "after",
+        "scale": "large",
+        "peak_count": 79,
+        "peak_fraction": 0.042841648590021694,
+        "top20_count": 0,
+        "total_regions": 1844
+      }
+    ],
+    "replicate_consistency": {
+      "pearson": 0.7903176245980014,
+      "spearman": 0.7984654655737817,
+      "unit": "equalized multiscale peak windows",
+      "n": 1844
+    },
+    "zero_axis": {
+      "budget": 0.2,
+      "definition": "scan window centers within selected region union",
+      "all_count": 20286,
+      "selected_count": 4068,
+      "all_zero_count": 1664,
+      "selected_zero_count": 285,
+      "all_rate": 0.08202701370403234,
+      "selected_rate": 0.0700589970501475,
+      "enrichment": 0.8540966431245746
+    },
+    "readiness": {
+      "checks": {
+        "beats_coverage_random_at_10pct": false,
+        "beats_coverage_random_at_20pct": false,
+        "all_classes_positive_at_20pct": true,
+        "zero_axis_enrichment_le_one": true,
+        "replicate_spearman_positive": true,
+        "same_and_cross_scale_no_leakage": true,
+        "all_background_known_overlap_zero": true
+      },
+      "ready_for_task2b": false,
+      "task2b_executed": false,
+      "coverage_evidence_valid_10pct": true,
+      "coverage_evidence_valid_20pct": true
+    }
+  },
+  "inputs": {
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale\\task2a_multiscale_manifest.json": {
+      "size_bytes": 26529,
+      "sha256": "0b090fb5b6e89dec3b542c1118e52d4303224de96d5fcd7f88d947361fb4235b"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale\\frozen_multiscale_protocol.json": {
+      "size_bytes": 6669,
+      "sha256": "734284c9564b8146622e3bd2a61e21360c3c91612185090503b56a3b379e6d01"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale\\scale_summary.csv": {
+      "size_bytes": 528,
+      "sha256": "e1d496f4ed39d3b03888ea8836901a8020a44b308fd7539ae6b30eb20aa82a0c"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale\\multiscale_candidate_regions.csv": {
+      "size_bytes": 572644,
+      "sha256": "b0125c40b79172364310d57a8dd08c2ddbe7f671dfba5fa22f5bb54627682ee5"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale\\background_split_leakage_audit.csv": {
+      "size_bytes": 392,
+      "sha256": "89878b79f0fb37850a3f330d927c4decc423224d71336f6ccdac12fa6f0bc287"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale\\background_known_interval_overlap_audit.csv": {
+      "size_bytes": 265,
+      "sha256": "91d1767028d6d6e9a03be64aec4f803244c8544103650dcbe27296f70668d451"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale\\small\\window_scores.csv": {
+      "size_bytes": 14785777,
+      "sha256": "05d3b7245f9615fda8884b1de1efec60099834136ebd0996bddbc8af67f7502c"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale\\medium\\window_scores.csv": {
+      "size_bytes": 7423779,
+      "sha256": "48ce62de1d6ea76df1bdf03c6e34653565697d4049eaa66c5d2341c63175be13"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale\\large\\window_scores.csv": {
+      "size_bytes": 3699711,
+      "sha256": "7da72bfb36eb07ad43e11bd7ae3bb7fd8aa1dd989bfd0d42f886ce97075d6322"
+    },
+    "F:\\Micro-C\\project\\data\\processed\\structures.csv": {
+      "size_bytes": 37408,
+      "sha256": "8ae5e792482a06a32a3fa85705505e5bbc1cf5957b0fca78ccee8e09bd51d7a6"
+    },
+    "F:\\Micro-C\\project\\src\\task2\\equalized_pipeline.py": {
+      "size_bytes": 19074,
+      "sha256": "663c61d1ba70aea6381bc4189ee1e27e3955864a110dabd1e6f4476294155175"
+    },
+    "F:\\Micro-C\\project\\src\\task2\\equalized.py": {
+      "size_bytes": 11660,
+      "sha256": "65bfe8eda288cdd20d7e64ea20b59193f798f5d0510c5ead132eca87cdd41833"
+    }
+  },
+  "outputs": {
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale_equalized\\equalized_window_scores.csv": {
+      "size_bytes": 32566227,
+      "sha256": "37bad4f3c606b1ba78e2f4800888ca684c134d53e1b73fb76f36014431b2e15e"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale_equalized\\equalized_candidate_regions.csv": {
+      "size_bytes": 520831,
+      "sha256": "ee91ea744494083e77af8e3e7cd0d98dfef833a620efa5365dfb76b790dc2d3f"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale_equalized\\region_membership.csv": {
+      "size_bytes": 2232405,
+      "sha256": "f0ae3d013c4c0bb070ffc9f91d01f320a43dc853f1d6e53d27e0bbae533bdf76"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale_equalized\\scale_contribution.csv": {
+      "size_bytes": 321,
+      "sha256": "8abcc4467d1a685efe40b1879ba788f703a350ab410ee4f645c37fbf770c692b"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale_equalized\\coverage_recall.csv": {
+      "size_bytes": 976,
+      "sha256": "f053a3d9d2ad8e610f467418f61ddc007f4cc6a2bcdf4f3147b16200cd0ae2ef"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale_equalized\\coverage_random_baseline.csv": {
+      "size_bytes": 1824,
+      "sha256": "10ea02da9473ce1c19f61e59b64c2de99529b5f69eff0627ce4327f89883a655"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale_equalized\\region_random_baseline.csv": {
+      "size_bytes": 1796,
+      "sha256": "431b1eb527ae77530b5fc8c2f9b5f188a26a076b05f2e649079494641f302e74"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale_equalized\\random_baseline_draws.csv": {
+      "size_bytes": 151126,
+      "sha256": "f02547092c8873244bcd486db18b6c336b2b4145082bc0513392378509c87532"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale_equalized\\replicate_consistency.csv": {
+      "size_bytes": 106,
+      "sha256": "10eb085aaada5f4f361129e40743e5759c8b300c88fafba40a098cc220b56dd9"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale_equalized\\zero_axis_audit.csv": {
+      "size_bytes": 248,
+      "sha256": "66ab489293a206dbad93d6227c14c851c5f769442c6390a286ad51982d598c17"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale_equalized\\readiness.json": {
+      "size_bytes": 480,
+      "sha256": "37d2d4e07cc44d19e42439f76fb962524786dc18f65da660fe03e3018980081a"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale_equalized\\task2a_equalized_summary.md": {
+      "size_bytes": 2482,
+      "sha256": "158803b9e10886df7f98086b75a520b7898e362bcec3a4a49bbbf9c3e23690f7"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale_equalized\\protected_artifacts_audit.json": {
+      "size_bytes": 16227,
+      "sha256": "f2dd2f6b0c671866fab5cf3116aab6d467d29a6280f40d5cf31219a6007497e2"
+    }
+  }
+}

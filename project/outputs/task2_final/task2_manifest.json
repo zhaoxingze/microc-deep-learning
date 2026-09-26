@@ -1,0 +1,469 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-09-25T02:31:08.198053+00:00",
+  "configuration": {
+    "version": "Task2-Final-v1",
+    "task2a_manifest_sha256": "a21de055b596570c566907209d63bc24ef396cb97119fbbaffa36cf79b342963",
+    "task2b_manifest_sha256": "f81e36dda5bbee78dd064471acdca6f271327bd042514d27a0058987bea8c4a7",
+    "task2c_manifest_sha256": "18c9aae90ccea39639360cf4d46ae8f70f366268c708d65f7393ad6bcf6f4537",
+    "task2d_manifest_sha256": "f62e81b41c3d1046d598d2b6ab071b962af14ba62396e15270e323daf5810fe0",
+    "frozen_task2d_protocol_sha256": "40599d9f7c8082f31f344f7668390d1b8688ac6608eb5aad474d094c5c6cd3b3",
+    "rep1_cool_sha256": "0256e10da36abfe0238bf16952bc43bc78365f43c201e6e3ba0c49bd243549a8",
+    "rep2_cool_sha256": "ede9b4f7c0c6b40c8f098e43cdd0abbc0a8987f05e8b37051a5e3cbf143ad106",
+    "genome_expected_sha256": "157ae6c5e1b96aeeb0b092f1a9e466aee109ff5a45dce497eb1675a4b9e80122",
+    "primary_window_rule": {
+      "source": "Task2A frozen best_scale and representative center",
+      "small": 3200,
+      "medium": 6400,
+      "large": 12800
+    },
+    "canonical_window_bp": 6400,
+    "oe_rule": "unclipped raw matrix divided by that replicate's validated genome-wide E(distance); nonpositive expected invalid",
+    "correlation_mask": "i < j and abs(i-j) > 2, paired finite O/E and positive expected",
+    "pearson_implementation": "scipy.stats.pearsonr on valid masked O/E values",
+    "spearman_implementation": "scipy.stats.spearmanr on valid masked O/E values",
+    "known_control_floor": "5th percentile of valid 344 Known canonical Pearson and Spearman separately; nonfinite or negative floor stops binary filtering",
+    "pearson_floor": 0.31186150698910403,
+    "spearman_floor": 0.27573844201209236,
+    "strict_novel_cluster_rule": "Task2C novel_like flag AND >=5 candidates AND zero Known AND zero claimed-member genomic Known overlap AND >=80% of valid candidate members pass",
+    "strict_cluster_pass_fraction": 0.8,
+    "heatmap_protocol": "log1p(unclipped O/E) rep1/rep2/difference, common vmax=99.5th percentile of finite pixels of all final follow-up rep1+rep2 displays; display only",
+    "visualization_vmax": 2.2075789698562627,
+    "seed": 20260920,
+    "numpy_version": "2.4.4",
+    "scipy_version": "1.18.1",
+    "sklearn_version": "1.9.0",
+    "pandas_version": "2.3.3"
+  },
+  "environment": {
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "numpy": "2.4.4",
+    "pandas": "2.3.3"
+  },
+  "statistics": {
+    "n_candidates": 231,
+    "n_strict_novel_candidates": 0,
+    "n_followup_candidates": 71,
+    "n_followup_clustered": 56,
+    "n_followup_noise": 15,
+    "completion": {
+      "checks": {
+        "task2a_finalized": true,
+        "task2b_complete": true,
+        "task2c_complete": true,
+        "task2d_reproducibility_complete": true,
+        "all_eligible_candidates_evaluated": true,
+        "known_positive_control_evaluated": true,
+        "background_reference_evaluated": true,
+        "cluster_level_reproducibility_complete": true,
+        "candidate_final_status_complete": true,
+        "strict_novel_list_generated": true,
+        "followup_unannotated_list_generated": true,
+        "heatmap_protocol_completed": true,
+        "final_manifest_generated": true,
+        "final_summary_generated": true,
+        "no_upstream_result_modified": true
+      },
+      "task2_complete": true,
+      "strict_novel_structure_detected": false,
+      "task3_executed": false
+    }
+  },
+  "inputs": {
+    "F:\\Micro-C\\project\\outputs\\task2a_final\\task2a_final_manifest.json": {
+      "size_bytes": 8638,
+      "sha256": "a21de055b596570c566907209d63bc24ef396cb97119fbbaffa36cf79b342963"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\task2b_manifest.json": {
+      "size_bytes": 14348,
+      "sha256": "f81e36dda5bbee78dd064471acdca6f271327bd042514d27a0058987bea8c4a7"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2c\\task2c_manifest.json": {
+      "size_bytes": 11511,
+      "sha256": "18c9aae90ccea39639360cf4d46ae8f70f366268c708d65f7393ad6bcf6f4537"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_final\\task2a_finalization.json": {
+      "size_bytes": 521,
+      "sha256": "a50671062924af687401e844d95248d27409312faaa4155d6ffa135b09b0deec"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\task2b_completion.json": {
+      "size_bytes": 440,
+      "sha256": "91c9ae70b013a84913556dfa8897317e7b68adcd803d432a1a216cf37af2d41f"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2c\\task2c_completion.json": {
+      "size_bytes": 772,
+      "sha256": "c4a6c9ef8a7a229059550892875525b15f25d653c973a404ea0c20d05836f3e1"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_final\\task2a_final_candidates.csv": {
+      "size_bytes": 47735,
+      "sha256": "635d13d8fe5c091cb779bc78079579f119883ffd29128606bda57138910a0df3"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\candidate_embeddings.npy": {
+      "size_bytes": 236672,
+      "sha256": "5bd49f4829cd2dfd8dba37bcf218f9675c79073d4505cae12da8761944e98117"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\reference_embedding_metadata.csv": {
+      "size_bytes": 52856,
+      "sha256": "e880ad97e74deb80e538e958d2591c1abc899f531d125844a88ddcfd081c14e8"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2c\\cluster_membership.csv": {
+      "size_bytes": 49677,
+      "sha256": "eb56f5e7da33709518d925696c80a65b995a0377973124592607c9c33efd2c50"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2c\\clusters.csv": {
+      "size_bytes": 112392,
+      "sha256": "1fdf1929aeefdc6aac44184b7b671f5303fa3c49a456a925c826aaf0224cef0a"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2c\\cluster_summary.csv": {
+      "size_bytes": 1154,
+      "sha256": "b26906a399122c7aaa0b8c47ca75a1f347ed799a5ab39963901482a27a80e0ea"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale\\frozen_multiscale_protocol.json": {
+      "size_bytes": 6669,
+      "sha256": "734284c9564b8146622e3bd2a61e21360c3c91612185090503b56a3b379e6d01"
+    },
+    "F:\\Micro-C\\project\\data\\task2_multiscale\\genome_expected_max128.npz": {
+      "size_bytes": 2550,
+      "sha256": "157ae6c5e1b96aeeb0b092f1a9e466aee109ff5a45dce497eb1675a4b9e80122"
+    },
+    "F:\\Micro-C\\micro-c数据\\GSE272159_37C_rep1.mapq_30.10.cool": {
+      "size_bytes": 482254398,
+      "sha256": "0256e10da36abfe0238bf16952bc43bc78365f43c201e6e3ba0c49bd243549a8"
+    },
+    "F:\\Micro-C\\micro-c数据\\GSE272159_37C_rep2.mapq_30.10.cool": {
+      "size_bytes": 468345755,
+      "sha256": "ede9b4f7c0c6b40c8f098e43cdd0abbc0a8987f05e8b37051a5e3cbf143ad106"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2d\\task2d_manifest.json": {
+      "size_bytes": 9762,
+      "sha256": "f62e81b41c3d1046d598d2b6ab071b962af14ba62396e15270e323daf5810fe0"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2d\\frozen_task2d_protocol.json": {
+      "size_bytes": 3354,
+      "sha256": "40599d9f7c8082f31f344f7668390d1b8688ac6608eb5aad474d094c5c6cd3b3"
+    },
+    "F:\\Micro-C\\project\\src\\task2d\\finalization.py": {
+      "size_bytes": 26183,
+      "sha256": "1d75a2202d41850d60314cc436c0681fb33d764d1a3e8cd10b2d64f14dd37e86"
+    }
+  },
+  "outputs": {
+    "F:\\Micro-C\\project\\outputs\\task2_final\\all_candidates_final_status.csv": {
+      "size_bytes": 233524,
+      "sha256": "ca030eb917da39e4fd87923bf432012c8fcc50c07bb7b6bd6e6cb0dc2fbc88bc"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\strict_novel_candidates.csv": {
+      "size_bytes": 1697,
+      "sha256": "562fc15e967d5a2ff0d8df759a630b644d82684978219589a7260d8cb841d3bb"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\reproducible_unannotated_candidates.csv": {
+      "size_bytes": 73020,
+      "sha256": "591eb0307548ca3f1666108f847e03d28fe0c7e9d5522ab26787b38d0220da9b"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_d2d392e1e3af249a.png": {
+      "size_bytes": 98253,
+      "sha256": "fdae2ba7973dddd0db5c5be9e94a3cf966e0132d269be9a45a4c7994955cac1e"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_f5ef0631b11a8bec.png": {
+      "size_bytes": 86395,
+      "sha256": "4ed65a35372d963b4f2dbf98a92aa7c9dfcde1dd2915d26d424d6c5d3025fce5"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_ab8c4d5f9e40d1d7.png": {
+      "size_bytes": 101552,
+      "sha256": "46ae4f3bbfbc256aedd98a20ad1cea32790a576193a2b416fd6f98df1034f0de"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_fee885b91f90be59.png": {
+      "size_bytes": 101915,
+      "sha256": "fcb66e24c9bdcfdb04082876529523641a324cf47ef46f31581a6e95fb6a4ecb"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_11a5f6c7b97c1f4a.png": {
+      "size_bytes": 101450,
+      "sha256": "f21ce9c950c7ea6d49bafd50e83fb3a61dd75fe626bc89a07223e4b833cc4e74"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_0af1ebaaab86f1c8.png": {
+      "size_bytes": 85265,
+      "sha256": "57d8e6f9f0baaa75eacf40de84a40b6e9e20a63d7da54712c6df5ceb152ab525"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_4bb24303d6e4e3ac.png": {
+      "size_bytes": 90004,
+      "sha256": "e05784c493349226a038e3520262ace3a991735445d85793b9e4028708e24ea3"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_a356c920b79fd72a.png": {
+      "size_bytes": 102568,
+      "sha256": "0c925e6b83e850e81cb1e8a401b14fac1b167d74475f23783974c9153ab663a2"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_a635ba46a50b3a49.png": {
+      "size_bytes": 102601,
+      "sha256": "7a65a6b61958c33dab640031b0f8fe8c8c99819670088f4836ded15f4b26ba4e"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_df9791c4a4cf8e2c.png": {
+      "size_bytes": 100934,
+      "sha256": "9da6bcdb05535e61e0a05049b9e83b3c5c61d177ad2cf0047bdd0b36949a83f3"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_3b8ffec8bac8d1a0.png": {
+      "size_bytes": 102937,
+      "sha256": "68d15685025358cdbac830dae6d87fd4169b231130f627d5e1e342efe4c1bbc2"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_43ba383d41c336e2.png": {
+      "size_bytes": 102288,
+      "sha256": "bd1901e9dc63aa140cb2150479962e07c7be574274244436bd2a92f14001c1e6"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_ff532581b24af75c.png": {
+      "size_bytes": 101606,
+      "sha256": "ce76fda1d3af7456cf7b37706fde31eb6c0703743dc0b458b507f1403ff4cc21"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_9160ea6e04d0fce4.png": {
+      "size_bytes": 102344,
+      "sha256": "c808abc56bb3de10e1f6f112055aa8658ccbd430f3b64d27d5162542b27dd4e6"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_71c429938c2bb421.png": {
+      "size_bytes": 102023,
+      "sha256": "90885a15c973f605959783eeb0cb1fa11fb8b3631aa1d0b183432bd98cf09d41"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_7089a736aaf0a1d4.png": {
+      "size_bytes": 101410,
+      "sha256": "fa3a85f36dab766b9edff0983f8e8d462b09e620b65a04c7d23016e33942db63"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_5e71eb22a239e0f3.png": {
+      "size_bytes": 102999,
+      "sha256": "c2ea0695e2dcd7a00d23d522eaa564657e21ab8f74a0d388d4ed39176ea45a7c"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_bc663b2769015222.png": {
+      "size_bytes": 102129,
+      "sha256": "2eedf2ac94b680cf69924561990dd11482ea4b6ae62ab86d449978da7fdad577"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_0d709798f3eacad9.png": {
+      "size_bytes": 101910,
+      "sha256": "c0f80d011d58ea808468d2a4fb28acc7bf9a41c1dfbbf105be476cc3b1b92830"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_b78622a8d089b9a6.png": {
+      "size_bytes": 78835,
+      "sha256": "48470f4fa72e3eee85672677fed5e399b3c08c4d7038bf462075703540bbb14b"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_18308d8d16cb77ab.png": {
+      "size_bytes": 102464,
+      "sha256": "938ef3f4c56a129f5bf6879d7bdff525463cba8a35f42a961bd6a55069cb77f9"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_c423410ef5466d80.png": {
+      "size_bytes": 103079,
+      "sha256": "d2cbf1b140e5b2e19ea270d8bb73be57a0790d45f6e0cd299e70206b7e85b5ae"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_a4bcec0e05a4ae7e.png": {
+      "size_bytes": 78861,
+      "sha256": "bb53f7404202d16c1b3912ac02d6f0e40f09583374aa6ffbb9411b7c840725f7"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_6e09d3bd094c8b1d.png": {
+      "size_bytes": 102871,
+      "sha256": "16e51380c42396061a05f0445f602f79c409b647d533934ee6493625897c4fcd"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_e35227c57fd34e9d.png": {
+      "size_bytes": 101683,
+      "sha256": "b9e89144165a85255a7c01e2ba41ecf4643603b3efc736b175167f278ffe6893"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_7e5e958cbc9d5099.png": {
+      "size_bytes": 102382,
+      "sha256": "d79798583992b8fba621b608c677f867d5777063ed177c51fc23050e51062f33"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_917948506f98694d.png": {
+      "size_bytes": 103101,
+      "sha256": "d20ea5cc6ba4c5e498cc5477c92db7ba0a3b046d764ad2b3baf5a17566abc1e0"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_5f65ee0fcb5cc0d3.png": {
+      "size_bytes": 102870,
+      "sha256": "beddd356b41cafb613a2ce708dff615bce440e5fa565050df281ff66fd7781fd"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_5808f814db7aac35.png": {
+      "size_bytes": 102565,
+      "sha256": "f5522cb692faa7d823f4caf0e385b93237ba2812b5a254903fb3c3df0585fd5b"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_73e6e7465ad4e4c4.png": {
+      "size_bytes": 102121,
+      "sha256": "295be6f4e35ffdac811cc61c2bb8f529d94e23a1ab0dbd74a3b488ef058b73fe"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_3ac62dfe3e5c70a8.png": {
+      "size_bytes": 102524,
+      "sha256": "c7b725ca52e2dc5f448c6198876738a7c9cfdaa8055aaf8592855f665d66f347"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_cad9757d375b2f54.png": {
+      "size_bytes": 102443,
+      "sha256": "5c7c0b21db470995ef66aa88afe6b27e859130fef7713897b96a83aea07b7d7e"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_b281c30546d2f2dd.png": {
+      "size_bytes": 81293,
+      "sha256": "c3f446a5f137ab289b8625da37c1313ce08f991c94305c8369daa4c16647d6a2"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_10132b1169a31424.png": {
+      "size_bytes": 102170,
+      "sha256": "01b576f59d825ad86cd674624e1805d20b9a64b7bf2ddb2d04a6e81c55da8c11"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_82a811abb2714642.png": {
+      "size_bytes": 95141,
+      "sha256": "e1bd17591ff9e766f25e034482d7b73cc992ac4a943ecf79b11b1554836fffc6"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_3fb3b4c0cc922b63.png": {
+      "size_bytes": 90017,
+      "sha256": "6f8953dac644573d34db9dce07ffdf7dd28839409dd357e3985e92877c990d0b"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_1edcba645d0dd4a1.png": {
+      "size_bytes": 102194,
+      "sha256": "b6ff721a8775d14b729ed38b965f96067194b12c9539af241fa8ed1bcd41880f"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_8a7aa8e9ef61cfa1.png": {
+      "size_bytes": 84856,
+      "sha256": "c5d1e2db49b4429ed00a0fe9e781ab45df760c6732a4eae64313981ebb637906"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_a200f3db7a36dfd1.png": {
+      "size_bytes": 101813,
+      "sha256": "d6a4181c0484b659f911ef3e5e2007d9399c63c6fb271ae15d6a91da9afb568c"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_c33836512cd5bdc3.png": {
+      "size_bytes": 102898,
+      "sha256": "351fd711d4386202a5a20d506317dec97d5e69b53060a7532f18a56b3edc7c6b"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_647ab946884b4026.png": {
+      "size_bytes": 102484,
+      "sha256": "a36b562230515865c38d432b830646b58e728c65d2533c0d88439ad256644b2a"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_7a99d7dca32569ea.png": {
+      "size_bytes": 102531,
+      "sha256": "8dbbd712d628d903d17e4d4f0b2ae5f5996aaf31d5154b120b2ce4ea029d8090"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_58716b8657663f82.png": {
+      "size_bytes": 102006,
+      "sha256": "77a4c01df184f07e270f7c682048f99ade74b5555b8adf92e3c2dad88f878bc8"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_53c92e209ab0d7b9.png": {
+      "size_bytes": 102264,
+      "sha256": "6204098545356d147d70eddcfafb86d703f379faa31a5c1f2ee8b65c295adfed"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_ddd616c6bc270d21.png": {
+      "size_bytes": 102493,
+      "sha256": "546d1912605985f59518b2ea4167a4a174980a5500242c92b8375b546de3a234"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_002f146b6f614245.png": {
+      "size_bytes": 100379,
+      "sha256": "95ec755e115a2e3b12df2c2cd4c065fc145ac113c87c446f55b92048205d7fb6"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_843e663633f07293.png": {
+      "size_bytes": 103755,
+      "sha256": "293d28fcd64e49d0302e410dfabd483462da2a2fa543a6e50d53ae2456597a20"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_917de285b2fc037c.png": {
+      "size_bytes": 102143,
+      "sha256": "f69d4a62a2041212afa9cce38164b17d838131e6470f057c05889f42db554994"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_be1e3265dcb6bee1.png": {
+      "size_bytes": 89185,
+      "sha256": "8e0eb9a9d4511793fc89846885bf8fb44e1f3c6d08ac020d039b42a8819eee31"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_f3868eb02e0f55d5.png": {
+      "size_bytes": 102211,
+      "sha256": "9cc1897ba63691e0fd5b160d2d5ce630a71226f72bb80893c6fb924ea9f123fc"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_3c17a76c91ba3620.png": {
+      "size_bytes": 101300,
+      "sha256": "dcc100a717938932f0459da0316b1bf2dc63a73d4e31de41aeb3b1e94153c7c7"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_a7d017e8cfb1a69c.png": {
+      "size_bytes": 96868,
+      "sha256": "c8cc9a1f35f02a9d70c914c3e3eb99f8a842f882539d7aed0a936cc580e1cf8e"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_fe17dc505c3e4dc0.png": {
+      "size_bytes": 102517,
+      "sha256": "cdbfdc365569f8c344e2b35693d218d93f00bc11fc8f837dd05e9eb0c48b6caa"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_5f42baef9d08ba56.png": {
+      "size_bytes": 101821,
+      "sha256": "5646c7a2680a4030c81ad55e3e3b17801ffbdde4d91454c9217ea186e3a42087"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_0a91cd1113f47b87.png": {
+      "size_bytes": 100248,
+      "sha256": "c5c13141bd66b3c55c1afa70dc34ff6f6a64acdb6b23e9183264900bf07de77a"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_060e46470534df49.png": {
+      "size_bytes": 103643,
+      "sha256": "6273d0da2ea0c063f67cce301ffff885aac7739656765f370597292cc28dc08c"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_1b9581ca537f3ca7.png": {
+      "size_bytes": 101001,
+      "sha256": "8994fa91e2590b378d9431e3525a02c5bb2eb1466e3710a7b6da6f8c6f1d4afe"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_c9d7ff0094b7ea19.png": {
+      "size_bytes": 102421,
+      "sha256": "fdcba2164e563d6cf186ea9f2337e99b6b04b1dc344b8499549e098e3647e91a"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_a1f94ce6c9ac1856.png": {
+      "size_bytes": 102242,
+      "sha256": "2c65eaf7c2316d336e33a1b194969669164806449c6d11324ffaca689463abbe"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_673fd16dbc85d929.png": {
+      "size_bytes": 102288,
+      "sha256": "330c43d661863f56abcd5012dce7afc59a4be76c3c2202b32ce3b3f02f965f25"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_80b11d76af0e3f6f.png": {
+      "size_bytes": 101266,
+      "sha256": "acbe0e0af9b0c5aa7bf7c32800080156b9b496ea5558bbce0282bb6e28d0b87d"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_ec68581bc4f6ef27.png": {
+      "size_bytes": 102644,
+      "sha256": "34d0361edf0bde87e1b68e5945c8339d72c3227662a121c4908604089c73b912"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_f3510ef7f2432010.png": {
+      "size_bytes": 101607,
+      "sha256": "bd28488ff6e32f09d3f9a93df48b607f9675f52bf1693f87426f9efb641ce409"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_0ec3deb6cb8e3a1f.png": {
+      "size_bytes": 102492,
+      "sha256": "fe3557f922c7e6599131b756aa09d442fd3b875c587cf5ad86d7a60e751913b1"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_e072be4f0cf1ad67.png": {
+      "size_bytes": 99854,
+      "sha256": "0dc089160dbf4f6eb3d5dea035eea068b33e69ddb16289934b0f8b4014aa7e73"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_e5bab547e32c0095.png": {
+      "size_bytes": 101458,
+      "sha256": "7358ef066f7c5cb65d649f4de2a38664dad4806e25b4f707738f14d49b533488"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_03e105604d014ba6.png": {
+      "size_bytes": 101324,
+      "sha256": "ec5866e17687c1da70f0886690c5419213292347003a105760b04b321eb311e9"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_c9e5776010a19d77.png": {
+      "size_bytes": 100932,
+      "sha256": "ae6f938233bb4ba89cc3d361466f80e41c20c1cee1b38605be14d009bc0a8430"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_9919e1fb6784c2a8.png": {
+      "size_bytes": 102627,
+      "sha256": "f53ec838a17639fc44f3e09c28e4687464a091c31e60cb4976f3bd4f1311cf0c"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_dd8ef6e92a048838.png": {
+      "size_bytes": 102747,
+      "sha256": "5d20e51205f378ade4d5058848358a99850b6f977b33514e79924c53c5dcb1f7"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\heatmaps\\FREG_6586b29a6604dd96.png": {
+      "size_bytes": 103245,
+      "sha256": "c71c19f08f5d38bfc14ec720f43664e5748428a58a60c81492d92a5583314f24"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\figures\\known_reproducibility_distribution.png": {
+      "size_bytes": 43942,
+      "sha256": "1ee2160fb7ba0efd19efe772260d1a21a4763d5f035dbf3a4bf53ff43d0b5a7e"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\figures\\candidate_vs_known_reproducibility.png": {
+      "size_bytes": 58392,
+      "sha256": "8c75b73bab7e9a19b62eb480bdfab10214f95c713b27f56be1d9cb53d5f68501"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\figures\\reproducible_candidate_gallery.png": {
+      "size_bytes": 109844,
+      "sha256": "09ff99f56856a9080e039387e8a12d35c4215a72a4c8605c1b08c2c6a81e69a2"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\task2_final_summary.md": {
+      "size_bytes": 11900,
+      "sha256": "09979bfa55811b3b466c0941dafc914680ab21092d4de733c683e6564be40049"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2_final\\task2_completion.json": {
+      "size_bytes": 751,
+      "sha256": "0e193b18f4e496a7790d8c4f21d5bf69f041561d9a66f5ccc4d94cb5121e5b8a"
+    }
+  }
+}

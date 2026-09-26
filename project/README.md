@@ -183,3 +183,141 @@ Smoke 产物位于 `outputs/pipeline_runs/task2a_smoke/`，明确不能用于科
 - `outputs/task1/zero_axis_sensitivity/`
 - `outputs/task1/task1_summary.md`
 - `outputs/task1/task1_manifest.json`
+# Task 2A.2: calibrated region-first detector
+
+Run from this project directory (PowerShell):
+
+```powershell
+python scripts/run_task2a.py --mode full --detector-version calibrated --dry-run
+python scripts/run_task2a.py --mode smoke --detector-version calibrated
+python scripts/run_task2a.py --mode full --detector-version calibrated
+```
+
+This version verifies and reuses the original scan/expected artifacts against
+the refined manifest. It creates a fresh whole-block Train/Validation/Calibration
+split (`data/task2/background_split_calibrated.csv`), retrains the existing AE,
+calibrates upper tails per replicate/branch, averages replicate anomaly scores
+within branches, then takes their maximum. NMS/regions and genomic union coverage
+are the primary evaluation protocol. Both coverage-matched and exact
+region-length-matched random baselines use a linear coordinate domain.
+
+Full outputs: `outputs/task2a_calibrated/`. Smoke workspace:
+`outputs/pipeline_runs/task2a_calibrated_smoke/` (reports under
+`outputs/task2a_calibrated/` within that workspace). Both historical output trees
+and the original five Task2 data artifacts are protected by before/after hashes.
+An invalid cache is rebuilt only in the new output tree, never over the originals.
+The protocol/code/split hashes are frozen before training and final known-label
+evaluation. `--resume` does not skip calibrated retraining or evaluation.
+Readiness is reported honestly and never triggers Task2B automatically.
+
+The exact frozen protocol is documented in
+`docs/superpowers/plans/2026-09-22-task2a-calibrated.md`; the runtime copy is
+`frozen_protocol.json`. CSV/summary outputs are UTF-8 with BOM.
+
+# Task 2A.3: multi-scale candidate detector
+
+The pre-registered detector uses 3.2/6.4/12.8 kb windows at a fixed 100 bp bin
+resolution, one shared genomic-block split, strict known-interval background
+exclusion, independent per-scale AE/calibration, and unweighted calibrated max
+fusion. It never starts Task2B automatically.
+
+```powershell
+python scripts/run_task2a.py --mode full --detector-version multiscale --dry-run
+python scripts/run_task2a.py --mode smoke --detector-version multiscale
+python scripts/run_task2a.py --mode full --detector-version multiscale --resume
+```
+
+Full data and results are isolated under `data/task2_multiscale/` and
+`outputs/task2a_multiscale/`. Smoke is isolated under
+`outputs/pipeline_runs/task2a_multiscale_smoke/`. The formal report is
+`outputs/task2a_multiscale/task2a_multiscale_summary.md`.
+
+# Task 2A.4: equalized cross-scale calibration
+
+This deterministic post-processing step reuses the completed Task2A.3 per-scale
+empirical p-values. It applies the frozen common floor `1/148`, then reruns only
+ranking, unchanged cross-scale NMS, coverage/random evaluation, and readiness.
+It does not read `.cool` or model files, retrain an AE, recompute Expected(d),
+search a threshold, or execute Task2B.
+
+```powershell
+python scripts/run_task2a_equalized.py --project-root F:\Micro-C\project
+```
+
+Results are isolated under `outputs/task2a_multiscale_equalized/`. The formal
+summary and manifest are `task2a_equalized_summary.md` and
+`task2a_equalized_manifest.json` in that directory.
+
+# Task2A Final and Task2B Structure Representation
+
+Task2A Final freezes six independent scale × branch proposal channels at a
+paired p-equivalent score `<= 0.05` (the geometric mean of two replicate-wise
+background empirical p-values; not a separately calibrated paired p-value), applies NMS inside each channel, and
+merges their overlapping intervals. Its last Known Recall is reported as an
+experimental limitation and does not control Task2B execution. Frozen
+artifacts are under `outputs/task2a_final/`.
+
+```powershell
+python scripts/run_task2b.py --mode full --dry-run
+python scripts/run_task2b.py --mode smoke
+python scripts/run_task2b.py --mode full
+python scripts/run_task2b.py --mode full --resume
+```
+
+Task2B extracts the validation-selected Task1 CNN hidden feature and the three
+existing scale-specific AE encoder features, standardizes each block on an
+unlabeled Known+strict Background reference set, and concatenates them. It
+reports genomic GroupKFold linear probes, PCA/UMAP visualizations, and
+replicate consistency. Full outputs are under `outputs/task2b/`; Smoke outputs
+are isolated under `outputs/pipeline_runs/task2b_smoke/outputs/task2b/` and
+are not scientific results. The frozen Task1 CNN was previously supervised on
+the same known structures, so CNN/Fused probe scores are descriptive rather
+than independent generalization estimates. Task2B does not execute Task2C.
+
+# Task2C: frozen unsupervised grouping
+
+Task2C reads the frozen Task2A Final and Task2B Full artifacts without modifying
+them. It fits a label-blind PCA retaining at least 95% variance on paired-average
+candidate + Known fused embeddings, then uses sklearn HDBSCAN with fixed 5/5
+parameters. Background and Known type labels enter only post-fit diagnostics;
+UMAP is visualization only. Cluster labels are descriptive and do not establish
+novel structures or execute Task2D.
+
+```powershell
+python scripts/run_task2c.py --mode full --dry-run
+python scripts/run_task2c.py --mode smoke
+python scripts/run_task2c.py --mode full
+python scripts/run_task2c.py --mode full --resume
+```
+
+Full outputs are under `outputs/task2c/`; Smoke is isolated under
+`outputs/pipeline_runs/task2c_smoke/outputs/task2c/` and is not a scientific
+result. See `task2c_summary.md` and `task2c_manifest.json` in the Full output.
+
+# Task2D and final Task2 freeze
+
+Task2D validates rep1/rep2 Micro-C O/E patterns at each candidate's frozen
+representative scale (3.2/6.4/12.8 kb); canonical 6.4 kb is supplemental and
+is used for all Known and Background controls. Formal Pearson/Spearman use only
+finite upper-triangle pixels with `i<j` and `|i-j|>2`. Separate genome-wide
+expected curves are used for the two biological replicates. The two Known
+canonical 5th percentiles are pre-registered floors; no candidate result
+changes the floors, Task2C labels, or the strict novel-cluster rule.
+
+```powershell
+python scripts/run_task2d.py --mode full --dry-run
+python scripts/run_task2d.py --mode smoke
+python scripts/run_task2d.py --mode full
+python scripts/run_task2d.py --mode full --resume
+python scripts/finalize_task2.py --verify
+```
+
+The protocol is frozen in `outputs/task2d/frozen_task2d_protocol.json`.
+Full reproducibility results are in `outputs/task2d/`; Smoke is isolated under
+`outputs/pipeline_runs/task2d_smoke/outputs/task2d/` and is not a scientific
+result. Final evidence tables, one globally scaled canonical O/E heatmap per
+reproducible unannotated follow-up candidate, figures, hashes, and completion
+are in `outputs/task2_final/`. `strict_novel_candidates.csv` may be empty while
+`task2_complete=true`: workflow completion is distinct from confirming a new
+structure type. Reproducible HDBSCAN noise is an unclustered follow-up locus,
+not a new class. No Task3 stage is started.

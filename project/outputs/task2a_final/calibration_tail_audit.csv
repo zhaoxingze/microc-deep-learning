@@ -1,0 +1,7 @@
+﻿channel,n_calibration_windows,n_below_fixed_threshold,observed_tail_fraction,fixed_threshold
+small_density,1054,52,0.04933586337760911,0.05
+small_shape,1054,39,0.03700189753320683,0.05
+medium_density,431,20,0.04640371229698376,0.05
+medium_shape,431,15,0.03480278422273782,0.05
+large_density,147,6,0.04081632653061224,0.05
+large_shape,147,7,0.047619047619047616,0.05

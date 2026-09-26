@@ -1,0 +1,12 @@
+{
+  "mode": "full",
+  "task2b_complete": true,
+  "candidate_embeddings_aligned": true,
+  "reference_embeddings_aligned": true,
+  "genomic_probe_group_leakage_zero": true,
+  "genomic_probe_interval_leakage_zero": true,
+  "known_labels_used_for_embedding_or_scaler_selection": false,
+  "prior_task1_cnn_supervision_overlaps_known_reference": true,
+  "independent_cnn_probe_generalization_claim": false,
+  "task2c_executed": false
+}

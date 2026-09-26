@@ -36,4 +36,8 @@ class SmallMicroCCNN(nn.Module):
         return self.features[8]
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
-        return self.classifier(self.pool(self.features(inputs)))
+        return self.classifier[3:](self.forward_features(inputs))
+
+    def forward_features(self, inputs: torch.Tensor) -> torch.Tensor:
+        """Return the stable post-ReLU hidden vector before dropout and logits."""
+        return self.classifier[:3](self.pool(self.features(inputs)))

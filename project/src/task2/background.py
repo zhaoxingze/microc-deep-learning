@@ -109,3 +109,61 @@ def assert_no_background_overlap(split: pd.DataFrame) -> None:
                 raise ValueError(
                     f"background train/val overlap leakage at {chrom}:{train_row.start}-{train_row.end}"
                 )
+
+
+def calibrated_background_split(windows: pd.DataFrame, *, block_bp: int = 128_000,
+                                seed: int = 20_260_920) -> pd.DataFrame:
+    """One seeded whole-block allocation; never optimize using known recall."""
+    required = {'window_id', 'chrom', 'start', 'end', 'background_candidate'}
+    if not required.issubset(windows) or block_bp <= 0:
+        raise ValueError('invalid background split input')
+    if windows.window_id.duplicated().any():
+        raise ValueError('background requires unique windows')
+    rows = windows.copy()
+    block = rows.start.astype(int) // block_bp
+    eligible = rows.background_candidate.eq(True) & rows.end.le((block + 1) * block_bp)
+    rows['block_id'] = rows.chrom.astype(str) + ':' + block.astype(str)
+    rows = rows.loc[eligible].copy()
+    blocks = np.asarray(sorted(rows.block_id.unique()), dtype=object)
+    if len(blocks) < 3:
+        raise ValueError('three-way split requires at least three eligible genomic blocks')
+    blocks = blocks[np.random.default_rng(seed).permutation(len(blocks))]
+    n_train = min(max(1, round(.7 * len(blocks))), len(blocks) - 2)
+    n_val = min(max(1, round(.15 * len(blocks))), len(blocks) - n_train - 1)
+    mapping = {b: 'train' if i < n_train else 'validation' if i < n_train+n_val
+               else 'calibration' for i, b in enumerate(blocks)}
+    rows['split'] = rows.block_id.map(mapping)
+    rows = rows.drop(columns=['background_split', 'background_block'], errors='ignore')
+    assert_three_way_no_overlap(rows)
+    return rows.sort_values(['chrom','start','window_id']).reset_index(drop=True)
+
+
+def assert_three_way_no_overlap(rows: pd.DataFrame) -> None:
+    required = {'window_id','block_id','split','chrom','start','end'}
+    if not required.issubset(rows) or set(rows.split) != {'train','validation','calibration'}:
+        raise ValueError('three nonempty splits and complete schema required')
+    if rows.window_id.duplicated().any() or (rows.end <= rows.start).any():
+        raise ValueError('duplicate IDs or invalid coordinates')
+    if rows.groupby('block_id').split.nunique().max() != 1:
+        raise ValueError('block overlap leakage')
+    from itertools import combinations
+    for a, b in combinations(('train','validation','calibration'), 2):
+        for chrom, left in rows.loc[rows.split.eq(a)].groupby('chrom'):
+            right = rows.loc[rows.split.eq(b) & rows.chrom.eq(chrom)]
+            overlap = (left.start.to_numpy()[:,None] < right.end.to_numpy()[None,:]) & (
+                left.end.to_numpy()[:,None] > right.start.to_numpy()[None,:])
+            if overlap.any():
+                raise ValueError(f'{a}/{b} genomic overlap leakage')
+
+
+def audit_known_interval_overlap(split: pd.DataFrame, known: pd.DataFrame) -> pd.DataFrame:
+    """Keep inherited exclusion geometry; fail rather than resplit if calibration is contaminated."""
+    overlaps=[]
+    for row in split.itertuples(index=False):
+        hits=known.loc[known.chrom.eq(row.chrom)&known.start.lt(row.end)&known.end.gt(row.start)]
+        if len(hits):
+            if row.split=='calibration':
+                raise ValueError('Calibration window overlaps actual known interval; abort without resplitting')
+            overlaps.append(dict(window_id=row.window_id,split=row.split,chrom=row.chrom,
+                start=row.start,end=row.end,known_structure_ids=';'.join(hits.structure_id.astype(str))))
+    return pd.DataFrame(overlaps,columns=['window_id','split','chrom','start','end','known_structure_ids'])

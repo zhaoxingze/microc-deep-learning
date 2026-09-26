@@ -20,8 +20,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--mode", choices=("smoke", "full"), default="smoke")
     parser.add_argument(
-        "--detector-version", choices=("legacy", "refined"), default="legacy",
-        help="Use the original mean-fusion detector or the versioned refined OR-Max detector.",
+        "--detector-version", choices=("legacy", "refined", "calibrated", "multiscale"), default="legacy",
+        help="Versioned legacy, refined OR-Z, calibrated, or multi-scale detector.",
     )
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--resume", action="store_true")

@@ -1,0 +1,132 @@
+{
+  "version": "task2a.3-multiscale-v1",
+  "frozen_at_utc": "2026-09-23T01:04:34.582819+00:00",
+  "mode": "full",
+  "scales": [
+    {
+      "name": "small",
+      "window_bp": 3200,
+      "step_bp": 400,
+      "matrix_bins": 32
+    },
+    {
+      "name": "medium",
+      "window_bp": 6400,
+      "step_bp": 800,
+      "matrix_bins": 64
+    },
+    {
+      "name": "large",
+      "window_bp": 12800,
+      "step_bp": 1600,
+      "matrix_bins": 128
+    }
+  ],
+  "target_bin_size": 100,
+  "expected": "one genome-wide vector per replicate d=0..127, sliced first32/64/128",
+  "chromosome_size": 4641652,
+  "evaluation_domain_size": 4641652,
+  "background_rule": "strict half-open known interval non-overlap; margin_bp=0",
+  "block_bp": 128000,
+  "master_block_assignment": "first seeded whole-block permutation giving every scale nonempty train/validation/calibration; then shared by all scales",
+  "master_assignment_attempt": 1,
+  "master_block_sha256": "9944dc517443e9769daef1a255458d4f7c77043780103839b973b6317e85b192",
+  "master_block_counts": {
+    "train": 26,
+    "validation": 6,
+    "calibration": 5
+  },
+  "window_counts": {
+    "small": 11597,
+    "medium": 5795,
+    "large": 2894
+  },
+  "background_counts": {
+    "small": {
+      "train": 5337,
+      "validation": 1251,
+      "calibration": 1054
+    },
+    "medium": {
+      "train": 2144,
+      "validation": 531,
+      "calibration": 431
+    },
+    "large": {
+      "train": 708,
+      "validation": 204,
+      "calibration": 147
+    }
+  },
+  "oe_clip_values": {
+    "small": {
+      "rep1": 10.358688479717674,
+      "rep2": 9.74031732395905
+    },
+    "medium": {
+      "rep1": 9.676656764876642,
+      "rep2": 9.231955237799191
+    },
+    "large": {
+      "rep1": 8.079182056324333,
+      "rep2": 7.748248146010035
+    }
+  },
+  "AE": {
+    "architecture": "BackgroundAutoencoder(\n  (encoder): Sequential(\n    (0): Conv2d(1, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\n    (1): ReLU(inplace=True)\n    (2): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)\n    (3): Conv2d(16, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\n    (4): ReLU(inplace=True)\n    (5): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)\n    (6): Conv2d(32, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\n    (7): ReLU(inplace=True)\n  )\n  (decoder): Sequential(\n    (0): Conv2d(64, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\n    (1): ReLU(inplace=True)\n    (2): Upsample(scale_factor=2.0, mode='bilinear')\n    (3): Conv2d(32, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\n    (4): ReLU(inplace=True)\n    (5): Upsample(scale_factor=2.0, mode='bilinear')\n    (6): Conv2d(16, 1, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\n  )\n)",
+    "epochs": 120,
+    "patience": 15,
+    "batch_size": 32,
+    "learning_rate": 0.001,
+    "loss": "full-pixel MSE",
+    "checkpoint": "minimum background Validation MSE only"
+  },
+  "calibration": "per-scale/per-replicate/per-branch p=(1+count(cal>=x))/(n+1), inclusive upper tail; A=-log10(p)",
+  "within_scale": "mean replicate anomaly within branch; scale_or=max(paired_density,paired_shape)",
+  "cross_scale_fusion": "unweighted maximum via one ranked calibrated window pool",
+  "cross_scale_nms": "suppress iff same chrom and abs(center difference)<max(window_bp_new,window_bp_peak)/2",
+  "formal_region": "exact peak window [start,end); support union diagnostic only",
+  "coverage_budgets": [
+    0.05,
+    0.1,
+    0.2,
+    0.3
+  ],
+  "random_repetitions": 100,
+  "random_seed": 20260920,
+  "random_domain": "linear",
+  "readiness": [
+    "overall10>coverage random97.5",
+    "overall20>coverage random97.5",
+    "all classes20 positive and >=region random2.5",
+    "zero-axis enrichment<=1",
+    "peak rep Spearman>0",
+    "same/cross-scale no split leakage",
+    "all background known overlap=0"
+  ],
+  "task2b_auto_execution": false,
+  "torch_version": "2.14.0+cpu",
+  "torch_num_threads": 24,
+  "code_sha256": {
+    "F:\\Micro-C\\project\\src\\task2\\__init__.py": "9f1dcd251f5bab8d511b4661b66cf851bd7b63f7776f45fa6597c54569ae35c8",
+    "F:\\Micro-C\\project\\src\\task2\\autoencoder.py": "616557a7b78a999d1d7e83add73dcd776939e4d888bed7977c54e968d2a657ab",
+    "F:\\Micro-C\\project\\src\\task2\\background.py": "a96a5b44b37eda7e84c64346225ed15c580646c6c62a80e2ca1307b86308d0c2",
+    "F:\\Micro-C\\project\\src\\task2\\calibrated_evaluation.py": "83e9e124d8112c5ec291547ebdae5bed93e3810b45dc2130ff9f844336bf481f",
+    "F:\\Micro-C\\project\\src\\task2\\calibrated_pipeline.py": "8b6dfed2e7a4617eb0667f6e1fa6853ae62a28cb8320a67786757884325d707c",
+    "F:\\Micro-C\\project\\src\\task2\\calibrated_reporting.py": "56d2fe991281779de273e7aa30422a77ac2f15ae420cd97654f21b69ec2d0e0b",
+    "F:\\Micro-C\\project\\src\\task2\\calibration.py": "7e207b8515d2bee344a1ee4a8dac21c9d1d3347b092f46391733e5f4ea4b078d",
+    "F:\\Micro-C\\project\\src\\task2\\expected.py": "a0e2fb142da162ec522c168683c073f4ff1c391b6eb775d87741da28e9690250",
+    "F:\\Micro-C\\project\\src\\task2\\multiscale.py": "e68cfa7a185da66e8ef94416eb57fbae8351f053905bb643313c9de89c20c6b9",
+    "F:\\Micro-C\\project\\src\\task2\\multiscale_pipeline.py": "736da2a441ab9342f05a3334d8e550976705d58c71d756b9ad2d4e0d76becbca",
+    "F:\\Micro-C\\project\\src\\task2\\multiscale_reporting.py": "ab23148b9d585b8837327c1cbda785d9b94a2ca48689fade116e7f8661e5c2c4",
+    "F:\\Micro-C\\project\\src\\task2\\pipeline.py": "ff0cb2b614106e59161da0d6d24ae5aee4503ae03e5b7d307563b4752330b2ed",
+    "F:\\Micro-C\\project\\src\\task2\\recall.py": "8d6a47b7d19f34ff940df665dfba0c959a2d5f16d0bd16f6e0fe5eda9375093b",
+    "F:\\Micro-C\\project\\src\\task2\\refined_evaluation.py": "3a7bed98b0716e6a1a821c0f5369d011c89588d89c58c4f9386428d103853c85",
+    "F:\\Micro-C\\project\\src\\task2\\region_detection.py": "55c9e4a1ebc0cd3b7f14e08ad94b39305a037189f45f6d67fcb625d779659fba",
+    "F:\\Micro-C\\project\\src\\task2\\reporting.py": "5ac395247d19cc84c57da3d2a2acde07eee09310e478c58508d92266bdc1f57e",
+    "F:\\Micro-C\\project\\src\\task2\\scoring.py": "2adba3e4cdb5e541a019de7b7fbb0861ffad45ddca3d0b7b36aef75ea748537e",
+    "F:\\Micro-C\\project\\src\\task2\\shape_preprocessing.py": "1d9973a7234143b26933b3d90fb1aca5f02f4fd4819e50acace864424f6293e2",
+    "F:\\Micro-C\\project\\src\\task2\\window_scan.py": "e458df9ca8e3cf35ee8fe895b28593897bda6d17c77949986e9789328f04b86f",
+    "F:\\Micro-C\\project\\scripts\\run_task2a.py": "79793f1424ae5b0fb6b85fbcd225e19cd1af471d70150cc189b892d0d75a042b"
+  }
+}

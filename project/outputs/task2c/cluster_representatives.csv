@@ -1,0 +1,4 @@
+﻿cluster_id,representative_sample_id,source,region_id,known_type,distance_to_centroid,candidate_representative_region_id
+0,CHIN_4bd6df699a4a442d,known,,CHIN,2.3942051966621536,
+1,OPCID_ee3461cf21068a4c,known,,OPCID,4.41545067317108,FREG_6586b29a6604dd96
+2,CHIN_1886affd5bea50b1,known,,CHIN,3.4163780285650347,

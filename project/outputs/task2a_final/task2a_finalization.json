@@ -1,0 +1,17 @@
+{
+  "checks": {
+    "proposal_protocol_frozen": true,
+    "candidate_regions_valid": true,
+    "task2a_artifacts_complete": true,
+    "rep1_rep2_accessible": true,
+    "no_train_val_calibration_leakage": true,
+    "known_labels_not_used_for_proposals": true
+  },
+  "protocol_frozen": true,
+  "candidate_regions_valid": true,
+  "known_label_tuning": false,
+  "ready_for_task2b": true,
+  "background_known_overlap_zero": true,
+  "task2a_known_recall_is_performance_gate": false,
+  "task2b_executed": false
+}

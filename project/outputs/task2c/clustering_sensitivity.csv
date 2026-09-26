@@ -1,0 +1,3 @@
+﻿min_cluster_size,min_samples,cluster_count,noise_count,noise_fraction,adjusted_rand_index_to_primary
+8,5,2,102,0.17739130434782607,0.9932678145256313
+5,8,2,105,0.1826086956521739,0.9301708533994589

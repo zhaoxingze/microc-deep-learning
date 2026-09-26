@@ -1,0 +1,57 @@
+{
+  "version": "Task2C-Structure-Grouping-v1",
+  "mode": "full",
+  "seed": 20260920,
+  "primary_population": "Task2B paired-average fused candidate + unique Known reference embeddings",
+  "background_in_pca_or_hdbscan_fit": false,
+  "replicates_as_independent_fit_rows": false,
+  "proposal_scores_used_for_fit": false,
+  "known_labels_used_for_fit": false,
+  "clustering_pca": {
+    "variance_fraction": 0.95,
+    "svd_solver": "full",
+    "fit_population": "candidate+Known without labels"
+  },
+  "primary_hdbscan": {
+    "min_cluster_size": 5,
+    "min_samples": 5,
+    "metric": "euclidean",
+    "cluster_selection_method": "eom",
+    "cluster_selection_epsilon": 0.0,
+    "allow_single_cluster": false,
+    "copy": true
+  },
+  "sensitivity_only": [
+    {
+      "min_cluster_size": 8,
+      "min_samples": 5
+    },
+    {
+      "min_cluster_size": 5,
+      "min_samples": 8
+    }
+  ],
+  "known_dominant_purity": 0.5,
+  "novel_like": "cluster>=0 and >=5 candidates and 0 Known and 0 candidate known-center/interval overlap",
+  "nearest_known_distance_as_filter": false,
+  "umap_used_for_clustering": false,
+  "task2d_executed": false,
+  "source_sha256": {
+    "task2a_manifest": "a21de055b596570c566907209d63bc24ef396cb97119fbbaffa36cf79b342963",
+    "task2a_protocol": "15075279e14de5aa398f0dbe1c2cc1b17366af354811c394ad23d6536b819369",
+    "task2a_candidates": "635d13d8fe5c091cb779bc78079579f119883ffd29128606bda57138910a0df3",
+    "task2b_manifest": "f81e36dda5bbee78dd064471acdca6f271327bd042514d27a0058987bea8c4a7",
+    "task2b_completion": "91c9ae70b013a84913556dfa8897317e7b68adcd803d432a1a216cf37af2d41f",
+    "candidate_embeddings": "5bd49f4829cd2dfd8dba37bcf218f9675c79073d4505cae12da8761944e98117",
+    "candidate_rep1": "1c6efe02086e52725d18b516f48f02133b49518d79bd36668c017dbea6aa2480",
+    "candidate_rep2": "951259561279bc31ddb4b48b55b3a53877f7eddbf9f6df09a4ef73493d29cf9e",
+    "candidate_metadata": "ed6fb3d7e7f7d306619cb61b6a512f1b93fd451bd0803bfbe74c19bf482e6a53",
+    "reference_embeddings": "01568869e99568668454c39bb4379b9956a3cb431fb92b1ecf0d449c13868cc8",
+    "reference_metadata": "e880ad97e74deb80e538e958d2591c1abc899f531d125844a88ddcfd081c14e8",
+    "feature_scaler": "e62f126e09c4204ba7f2b235ea9f1b3921a31e63c114cf08eb227b6914bd75fd",
+    "umap_coordinates": "6d4fbb81469501e2efc9086b0d9af688ac4f01619bafadb7c2c71d9fc594327c",
+    "expected": "157ae6c5e1b96aeeb0b092f1a9e466aee109ff5a45dce497eb1675a4b9e80122",
+    "multiscale_protocol": "734284c9564b8146622e3bd2a61e21360c3c91612185090503b56a3b379e6d01"
+  },
+  "clustering_code_sha256": "9649bbbcb729fa5ba5d964f195674c4411655b637915c4622731f5343ed950da"
+}

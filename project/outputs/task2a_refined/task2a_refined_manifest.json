@@ -1,0 +1,420 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-09-21T14:01:10.645157+00:00",
+  "configuration": {
+    "mode": "full",
+    "detector_version": "refined",
+    "chrom": "MG1655",
+    "window_bp": 6400,
+    "step_bp": 800,
+    "target_bin_size": 100,
+    "scan_end": null,
+    "block_bp": 128000,
+    "shape_input_mode": "oe_log_robust",
+    "oe_clip_source": "background_train",
+    "oe_clip_percentile": 99.5,
+    "oe_clip_values": {
+      "rep1": 6.5520215364674215,
+      "rep2": 6.386867341209111
+    },
+    "per_window_normalization": "(log1p(clipped_oe)-median_valid)/(1.4826*MAD_valid+1e-8)",
+    "shape_normalized_clip": [
+      -10.0,
+      10.0
+    ],
+    "epochs": 120,
+    "patience": 15,
+    "best_epoch": 85,
+    "best_validation_loss": 0.35617421872049404,
+    "density_score_definition": "mean genome O/E where i<j and |i-j|>2",
+    "shape_score_definition": "mean reconstruction MSE where i<j and |i-j|>2",
+    "fusion_methods": [
+      "MEAN",
+      "OR_MAX",
+      "POSITIVE_SUM"
+    ],
+    "primary_fusion": "OR_MAX",
+    "coverage_random_tolerance": 0.02,
+    "random_repetitions": 100,
+    "random_seed": 20260920,
+    "branch_correlations": [
+      {
+        "subset": "all",
+        "n_windows": 5795,
+        "pearson": -0.2643029704185712,
+        "spearman": -0.42755215473780256
+      },
+      {
+        "subset": "background",
+        "n_windows": 1932,
+        "pearson": -0.16641531151724107,
+        "spearman": -0.2985335842868048
+      },
+      {
+        "subset": "known_overlap",
+        "n_windows": 1859,
+        "pearson": -0.22687078794308718,
+        "spearman": -0.5094137585204316
+      },
+      {
+        "subset": "top_candidates",
+        "n_windows": 580,
+        "pearson": 0.07651385228950487,
+        "spearman": -0.4581226665256191
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "numpy": "2.4.4",
+    "pandas": "2.3.3"
+  },
+  "statistics": {
+    "windows": 5795,
+    "background_train": 1570,
+    "background_val": 362,
+    "known_structures": 344,
+    "candidate_regions": 67,
+    "robust_scales": {
+      "rep1": {
+        "density_median": 0.6771488765601668,
+        "density_mad": 0.25406233801821454,
+        "shape_median": 0.46806272864341736,
+        "shape_mad": 0.0924157202243805
+      },
+      "rep2": {
+        "density_median": 0.6873399131717794,
+        "density_mad": 0.2564456799286054,
+        "shape_median": 0.4686296731233597,
+        "shape_mad": 0.09453500807285309
+      }
+    },
+    "best_epoch": 85,
+    "best_validation_loss": 0.35617421872049404,
+    "zero_axis": {
+      "all_rate": 0.09301121656600518,
+      "top_rate": 0.034482758620689655,
+      "enrichment": 0.37073763674748894
+    },
+    "readiness": {
+      "ready": false,
+      "checks": {
+        "beats_coverage_random_95pct_at_top10_and_top20": false,
+        "all_classes_recalled_at_top20pct": true,
+        "retains_legacy_top20_overall": false,
+        "zero_axis_not_dominant": true,
+        "replicate_scores_positively_correlated": true,
+        "shape_branch_not_near_duplicate": true
+      }
+    }
+  },
+  "inputs": {
+    "F:\\Micro-C\\micro-c数据\\GSE272159_37C_rep1.mapq_30.10.cool": {
+      "size_bytes": 482254398,
+      "sha256": "0256e10da36abfe0238bf16952bc43bc78365f43c201e6e3ba0c49bd243549a8"
+    },
+    "F:\\Micro-C\\micro-c数据\\GSE272159_37C_rep2.mapq_30.10.cool": {
+      "size_bytes": 468345755,
+      "sha256": "ede9b4f7c0c6b40c8f098e43cdd0abbc0a8987f05e8b37051a5e3cbf143ad106"
+    },
+    "F:\\Micro-C\\project\\data\\processed\\structures.csv": {
+      "size_bytes": 37408,
+      "sha256": "8ae5e792482a06a32a3fa85705505e5bbc1cf5957b0fca78ccee8e09bd51d7a6"
+    },
+    "F:\\Micro-C\\project\\data\\task2\\genome_windows_metadata.csv": {
+      "size_bytes": 1635250,
+      "sha256": "4517a7344698eeed27250ba77cc36ad66ab7cde4ea5e33d729712aeaaa057c5e"
+    },
+    "F:\\Micro-C\\project\\data\\task2\\genome_windows_rep1.npy": {
+      "size_bytes": 94945408,
+      "sha256": "ed8d56b1b6dc09e2ce3b6a33baa1a1918b8ab97e079f71a7fd9a5e471b26c039"
+    },
+    "F:\\Micro-C\\project\\data\\task2\\genome_windows_rep2.npy": {
+      "size_bytes": 94945408,
+      "sha256": "545c63cc59a0705f82e4b9373b52d5559025ea80eb97de4fb22426cd572f2286"
+    },
+    "F:\\Micro-C\\project\\data\\task2\\genome_expected.npz": {
+      "size_bytes": 1526,
+      "sha256": "975ffe1f8453f39bc11b0d32ae62c7fee642e98c785d4517ed02052dfc1f883f"
+    },
+    "F:\\Micro-C\\project\\data\\task2\\background_split.csv": {
+      "size_bytes": 975904,
+      "sha256": "b7fab09e91be6f0e0e641a7b7240e9563a65d784e68f6eebf1014298da9f0d72"
+    }
+  },
+  "outputs": {
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\background_autoencoder\\best_model.pth": {
+      "size_bytes": 573237,
+      "sha256": "3733e9a0f9a7b111929d32d2d147cf7185ce967fc1e32ad7476cc4ad88ed1db0"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\background_autoencoder\\training_history.csv": {
+      "size_bytes": 4270,
+      "sha256": "077fa12b74d4784a0939eea3bf3c306512e759522aa24d58754b177000470744"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\candidate_scores.csv": {
+      "size_bytes": 4666725,
+      "sha256": "03754bf5499019118f6b90d931746aa58c6b29017ea3c8009f46821199a6c6fd"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\candidate_regions_or_max.csv": {
+      "size_bytes": 8735,
+      "sha256": "311e5f9112650f608e1432a7970cdd9b50907f322a475a3bc0a463b5e014911b"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\replicate_consistency.csv": {
+      "size_bytes": 78,
+      "sha256": "795c1c9dd79af0c3691f9a36563077540a3c23fc9554a1340f502ddacd0410bd"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\zero_axis_audit.csv": {
+      "size_bytes": 110,
+      "sha256": "c73849ab249ec22043027ca92192a97dcf1ebdea79288165ef51be2937ec3448"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\training_curve.png": {
+      "size_bytes": 47012,
+      "sha256": "0004915b96e2e6a49c78635293578b7cd688b96a59a5795b76cd90ed4a8429f7"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\branch_scatter.png": {
+      "size_bytes": 70565,
+      "sha256": "a9134d86b69e82dd9498137c302e8b2f7dcb7dd56a25c79e2a14c19157bf4137"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\detector_recall_curve.png": {
+      "size_bytes": 77314,
+      "sha256": "e50254b5d0ec8bad0dfc406e6c4dc54d13194b59986b6f151b985f457cc41318"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\or_max_vs_random.png": {
+      "size_bytes": 91460,
+      "sha256": "0bfcbf4580247c014c58e57b38acd62a09165cbce7766d18a7364f9f7fc8b4f4"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\reconstruction_examples\\01_CHIN_WIN_fe1c169ce29c009b.png": {
+      "size_bytes": 72600,
+      "sha256": "67210f6eb97337a1f2d44d0e3a65057a072b6aec4d6ccc8bd05f5f5616b21f5b"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\reconstruction_examples\\02_OPCID_WIN_9f5b327682402a48.png": {
+      "size_bytes": 74415,
+      "sha256": "4dd7e9a1ed6cba61a14a44f27bf9044a70f0cf0c9593c94dd7f6a2d127757a2b"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\reconstruction_examples\\03_CHID_WIN_ce5eb97de406aa43.png": {
+      "size_bytes": 83966,
+      "sha256": "986042be98d847387659b570d44d986a41a59dd9004e87e5db3dcce15493b027"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\reconstruction_examples\\04_background_WIN_1fc62eb1213185ea.png": {
+      "size_bytes": 75766,
+      "sha256": "8eecd8501ac7227b4ecdfc2fd8510d2cc2b301ac26886b9dc94e622c92af2079"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0001_WIN_9f5b327682402a48.png": {
+      "size_bytes": 55043,
+      "sha256": "df9b86cdb95fa8f85b19dc83c19c4d4225e7b2283895be3abdc39abb8b645a28"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0002_WIN_2214b3c0c0d86f57.png": {
+      "size_bytes": 54570,
+      "sha256": "19fac5723086262d5c1294631e06d46ab90ee58953f6ac4c8a12f6fc80e7f53d"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0003_WIN_91dcf33c3970744c.png": {
+      "size_bytes": 53672,
+      "sha256": "35c3daa47871c6d8c5d34b392b6cd629e65df310a0072e0e980f00efbf7bfb59"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0004_WIN_82f2371819f88fe7.png": {
+      "size_bytes": 53216,
+      "sha256": "884475d4d4dd02f297d35fc0786955205fe36f4c63596c50280f26bb0f8bfe30"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0005_WIN_bef12e4567ecea75.png": {
+      "size_bytes": 54046,
+      "sha256": "1f5e5b433cd0fd5b90bfd083dafe1381057acc517bebd67d75e6e636273e0f83"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0006_WIN_a3cb3466cbe597e1.png": {
+      "size_bytes": 53790,
+      "sha256": "fce22b0a074b64d2a3f759b22b9d7bc1e4fd30da87a07d21cb6521fd5fb27fea"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0007_WIN_800654f3b2e5c71f.png": {
+      "size_bytes": 54258,
+      "sha256": "118c48acf0e2b933b56e4d4f2ee4a85afa9ee4c369cde2cdafa0354d98aa18c6"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0008_WIN_3a40a15a184c85d2.png": {
+      "size_bytes": 53893,
+      "sha256": "5d84d512b5de36a2ce2e4ddc85564ea0554a720cda9616589db549b72d24d3ac"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0009_WIN_3ce8ce92b481ad1a.png": {
+      "size_bytes": 51791,
+      "sha256": "a8bb1b56d3bbee04e2362762914274c126137aeecab88df98d03d00a7e954b9f"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0010_WIN_732474f1d27ead2d.png": {
+      "size_bytes": 53191,
+      "sha256": "80e7d87e00f4655e42fb3eeb59f89ba31b108d4a3b474f542a8748120f0bb5be"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0011_WIN_26e0519bf8f18e42.png": {
+      "size_bytes": 52788,
+      "sha256": "38e6548d8673ad68a31ef8f694cb6d227587015f48009ddcf15975312d5ed072"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0012_WIN_ea1df0fc54d42b34.png": {
+      "size_bytes": 55193,
+      "sha256": "ce468db1d20161487283862c3dab2754a8c26368729dfbc1385003fe7fb38f41"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0013_WIN_170ba20bfffcb12c.png": {
+      "size_bytes": 52777,
+      "sha256": "66d78187d5ddf6e97894338cf009db0bd02110ccc27f3839f501b376f984b631"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0014_WIN_413ad38ab2c6e6ad.png": {
+      "size_bytes": 54844,
+      "sha256": "7d4721f3f29dee9053c5a058291d5c254a6e6688c70cbb3b49f7755ad5119d30"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0015_WIN_d3db49576796cf26.png": {
+      "size_bytes": 56212,
+      "sha256": "ec7971d6ac1bd037d590c5230ab2ff8d20d96a005daf207375d84007d1684bbf"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0016_WIN_3230d3b53d31e102.png": {
+      "size_bytes": 54740,
+      "sha256": "2a18e00a689692c63708d282ee8ef25ebfb014f023959f0ac753ebfed37dc5a5"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0017_WIN_43c1190bc97ab8c3.png": {
+      "size_bytes": 55253,
+      "sha256": "e3086a30512a0b70b231dd45312dabd7c6f396059c0a4f64ed678bdd3533efa9"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0018_WIN_79d080ff7faf66ba.png": {
+      "size_bytes": 55097,
+      "sha256": "43619c6a42b183b0dea68a18991e2aad781d017c3d05d1ee6b1bfc9133aa1a76"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0019_WIN_25491494c23a8b0b.png": {
+      "size_bytes": 61353,
+      "sha256": "b905c2497b4529b082a729c0522f86fd32b02decef9b602c33bf29142ae7945f"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0020_WIN_fe1c169ce29c009b.png": {
+      "size_bytes": 54084,
+      "sha256": "06500a5659ab5713031617989947422abef3a0270bf618c47e18c728ce62214f"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0021_WIN_09f660e6a0188b86.png": {
+      "size_bytes": 53955,
+      "sha256": "e973a11cf45e6e360b664869cbf34f329be143d9a4f3daf3c126938aaf5d0c70"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0022_WIN_c696500d6f097b88.png": {
+      "size_bytes": 55109,
+      "sha256": "d77393a478e39c54a6ad027b6fc235ea941b42403ce2bddfe89acfebe5b33120"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0023_WIN_6136fab8c3725fa8.png": {
+      "size_bytes": 60488,
+      "sha256": "e2e857166278d06dc990021d4ab11b468332713320e725939700020d7720e4ed"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0024_WIN_6d475c96b9abad0b.png": {
+      "size_bytes": 54031,
+      "sha256": "4038347490bf7d3475168403aea0e5484ad1f87e9e245f8e400a722dcef1ddd0"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0025_WIN_18dfbf56f068f216.png": {
+      "size_bytes": 54906,
+      "sha256": "4b7790b8debe39198aa11c070d4da088c97ccafd392be76f2f5dd78c92ac01ea"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0026_WIN_dad8dc9208ff99ab.png": {
+      "size_bytes": 56110,
+      "sha256": "aec28152004c6b52f8dd6b62d77ec1e7d72aac2b3d84ea02688038a06143835b"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0027_WIN_79e6f8258c86633d.png": {
+      "size_bytes": 54257,
+      "sha256": "614823fff83913827485e80d6f3dae3807d58f16a51573b91640f31c23214e7f"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0028_WIN_5f882094e010a0d9.png": {
+      "size_bytes": 54760,
+      "sha256": "495a5081a7a607d3f32587502a28f4c293b9d0695dd7dfb7a3c8065206685fb7"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0029_WIN_647c406011cf06d7.png": {
+      "size_bytes": 55763,
+      "sha256": "64b1575e946a0f43b547aba31a3fbedfcbfdcdb14ffbd3daad5489709587962f"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0030_WIN_d7ad951b8768b8de.png": {
+      "size_bytes": 53883,
+      "sha256": "b60c0aa2a91f11b1832db19a10b35ad8883c65fbfca0804f811c398346f8924a"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0031_WIN_758c26b5add4d8f2.png": {
+      "size_bytes": 55551,
+      "sha256": "0f8099e95b9f871d744135398f787de248b9f3d2a7c3940f397dcff5d2b516ee"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0032_WIN_9f8a445e5b32c211.png": {
+      "size_bytes": 55411,
+      "sha256": "4e4a269d3e6c50cb723afb70b652774ddfd419ed6b84bf05fe479bb3d7bc7331"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0033_WIN_6aa0715331f59580.png": {
+      "size_bytes": 55176,
+      "sha256": "c3f0413c5afe220ad13f65e52ca86a59209b98420671295ee3d3c6d68a9ac880"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0034_WIN_1b12d355fdaa5a23.png": {
+      "size_bytes": 55083,
+      "sha256": "6da6fe2720e372f7aef22332e11061808e9d337c21a34a52bb144310031503d3"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0035_WIN_48b2f8bc45724609.png": {
+      "size_bytes": 54738,
+      "sha256": "0655f538204380405948c360ddeb1dd478152d4a166340781c9dc29071216f3e"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0036_WIN_16e2864f7e1bcaab.png": {
+      "size_bytes": 53986,
+      "sha256": "39bf3576afc77e3601139da5a3ab0e385f9a6cc92dc73936ad86d9c34cd8c989"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0037_WIN_ccf1ed4ea07bcfc6.png": {
+      "size_bytes": 53984,
+      "sha256": "5840da8f2ec5a36ea6097fee19415353291b3adc40d84401b503254a1bf46772"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0038_WIN_76d0dc9e98742175.png": {
+      "size_bytes": 55913,
+      "sha256": "977e9afadb0f3c13454560c2d112666417b3b8f10d7735bea478b825cd9e8ae8"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0039_WIN_b32ec38f24ef6726.png": {
+      "size_bytes": 55393,
+      "sha256": "5f40ab2916c713dab03467a1f823fe6ab3826017d7cf2e427cab534b14230374"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0040_WIN_6f4d44f740726e3e.png": {
+      "size_bytes": 53461,
+      "sha256": "5712449efdccc73dae6a3aef1473d9e40781da92391ed36ba7840070b1e88d7b"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0041_WIN_40f78fa5bc3233e9.png": {
+      "size_bytes": 52902,
+      "sha256": "83945395e6761eea276c44552507858cb0da3961623d81d86036941b4685599f"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0042_WIN_be0c77abdf014970.png": {
+      "size_bytes": 52587,
+      "sha256": "0cbe8ca3c1a8ccc158bcd4d4a5ad7472a92d2e3e1f656e51edffcec00bc12e8b"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0043_WIN_891b8fa65c46cfb1.png": {
+      "size_bytes": 47862,
+      "sha256": "7c943b1bd8f408876013ed7536caa409eaa07e1241731f4729f1e3b0c580aa8f"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0044_WIN_edc2b5aba269fae7.png": {
+      "size_bytes": 54173,
+      "sha256": "6bdd1d572eece59e7ff22958867a28b7cceffb1ebea8027696fe463852ca5683"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0045_WIN_4a8c76b6a9a59938.png": {
+      "size_bytes": 55644,
+      "sha256": "a99296d4715b12566be367d1f7ca67f92c8a9f9a1f0703b0b208dce58a692ac4"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0046_WIN_2b9594fa868b0efb.png": {
+      "size_bytes": 55858,
+      "sha256": "1a97f369f8262de4992812f55f1158d9e07818427784111741be6ca7677ce00a"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0047_WIN_7af38791001ac21f.png": {
+      "size_bytes": 61711,
+      "sha256": "f429b8383f1ce43d13cab8839c848c48eb5d4bbc20fbbb15b7e7f7250f0cd63d"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0048_WIN_f50b815f9d79a677.png": {
+      "size_bytes": 55355,
+      "sha256": "f19d38f58ca22c15a6b077fe96328cb546f3b2f605f7d614a68d3334912f8e21"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0049_WIN_565a9c9c997ce276.png": {
+      "size_bytes": 56037,
+      "sha256": "da849eafc6d0aaffa7c335ab86635ce233197173c694ab38fa6a66162daf31bc"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\figures\\top_candidates\\rank_0050_WIN_4ca48f7fb63fc1c1.png": {
+      "size_bytes": 54856,
+      "sha256": "6c09d0385aa4b64cc00f9d5bda3b60cca31cc26d84679bb37aca9fb01981ded0"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\detector_comparison.csv": {
+      "size_bytes": 2333,
+      "sha256": "07c7d6e7fd544a64ef2e48494d4bb271b31734f0cb2c8ecb55fc8d13d4d00166"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\random_baseline_comparison.csv": {
+      "size_bytes": 11124,
+      "sha256": "f2cd4f5912aaf4cd284d7d63937523ab227bfb2b3be6cf8112fb6d622321fed5"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\branch_correlation.csv": {
+      "size_bytes": 268,
+      "sha256": "befe21e121a0441baea396e86dcd85bd9fb4e60560227a5cc718278e99acb69d"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\task2a_refined_summary.md": {
+      "size_bytes": 13448,
+      "sha256": "dccac894179ff6457c974b21a42f50104186e5309d3114666730ef591a035840"
+    }
+  }
+}

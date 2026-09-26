@@ -1,0 +1,4 @@
+﻿cluster_id,cluster_annotation,candidate_count,candidate_valid_count,median_primary_pearson,primary_pearson_iqr,median_primary_spearman,primary_spearman_iqr,reproducible_candidate_count,reproducible_fraction
+0,CHIN-like,0,0,,,,,0,
+1,CHIN-like,189,189,0.33701612934394964,0.4571123693976151,0.34100272665239556,0.47853407120554464,103,0.544973544973545
+2,CHIN-like,0,0,,,,,0,

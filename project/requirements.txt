@@ -10,3 +10,4 @@ scipy>=1.11,<2
 seaborn>=0.13,<0.14
 torch>=2.2,<3
 xlrd>=2,<3
+umap-learn>=0.5.7,<0.6

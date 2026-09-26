@@ -1,0 +1,15 @@
+{
+  "checks": {
+    "beats_coverage_random_at_10pct": false,
+    "beats_coverage_random_at_20pct": false,
+    "all_classes_positive_at_20pct": true,
+    "zero_axis_enrichment_le_one": true,
+    "replicate_spearman_positive": true,
+    "same_and_cross_scale_no_leakage": true,
+    "all_background_known_overlap_zero": true
+  },
+  "ready_for_task2b": false,
+  "task2b_executed": false,
+  "coverage_evidence_valid_10pct": true,
+  "coverage_evidence_valid_20pct": true
+}

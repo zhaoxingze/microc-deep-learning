@@ -1,0 +1,250 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-09-24T11:57:39.799726+00:00",
+  "configuration": {
+    "version": "Task2C-Structure-Grouping-v1",
+    "mode": "full",
+    "seed": 20260920,
+    "task2a_final_protocol_sha256": "15075279e14de5aa398f0dbe1c2cc1b17366af354811c394ad23d6536b819369",
+    "task2a_candidate_csv_sha256": "635d13d8fe5c091cb779bc78079579f119883ffd29128606bda57138910a0df3",
+    "task2b_manifest_sha256": "f81e36dda5bbee78dd064471acdca6f271327bd042514d27a0058987bea8c4a7",
+    "candidate_embedding_sha256": "5bd49f4829cd2dfd8dba37bcf218f9675c79073d4505cae12da8761944e98117",
+    "known_reference_embedding_subset_sha256": "8be2f46cba56e76b88c4e29c7e4a4f01c08e485bd947f72a83bd2f813c59096c",
+    "reference_embedding_file_sha256": "01568869e99568668454c39bb4379b9956a3cb431fb92b1ecf0d449c13868cc8",
+    "feature_scaler_sha256": "e62f126e09c4204ba7f2b235ea9f1b3921a31e63c114cf08eb227b6914bd75fd",
+    "frozen_protocol_sha256": "a0e02dc4d7459658b5af2fc0a6360eb232e3f0778f48ebbf51402bb4a3a4c071",
+    "clustering_pca": {
+      "variance_fraction": 0.95,
+      "svd_solver": "full",
+      "fit_population": "candidate+Known without labels"
+    },
+    "clustering_pca_n_components": 13,
+    "clustering_pca_cumulative_explained_variance": 0.9540716908002462,
+    "hdbscan_implementation": "sklearn.cluster.HDBSCAN",
+    "sklearn_version": "1.9.0",
+    "primary_hdbscan": {
+      "min_cluster_size": 5,
+      "min_samples": 5,
+      "metric": "euclidean",
+      "cluster_selection_method": "eom",
+      "cluster_selection_epsilon": 0.0,
+      "allow_single_cluster": false,
+      "copy": true
+    },
+    "cluster_summary_sha256": "b26906a399122c7aaa0b8c47ca75a1f347ed799a5ab39963901482a27a80e0ea",
+    "known_labels_used_after_clustering_only": true,
+    "umap_used_for_clustering": false,
+    "task2d_executed": false
+  },
+  "environment": {
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "numpy": "2.4.4",
+    "pandas": "2.3.3"
+  },
+  "statistics": {
+    "n_candidates": 231,
+    "n_known": 344,
+    "n_background_diagnostic": 344,
+    "n_clusters": 3,
+    "n_noise": 97,
+    "noise_fraction": 0.16869565217391305,
+    "n_novel_like_clusters": 0,
+    "silhouette_nonnoise": 0.2560571721516928,
+    "replicate_nearest_centroid_agreement": 0.9653679653679653,
+    "completion": {
+      "checks": {
+        "candidate_embeddings_metadata_aligned": true,
+        "known_reference_metadata_aligned": true,
+        "clustering_pca_complete": true,
+        "primary_hdbscan_complete": true,
+        "cluster_membership_complete": true,
+        "cluster_summary_complete": true,
+        "known_like_annotation_complete": true,
+        "novel_like_identification_complete": true,
+        "centroids_and_medoids_complete": true,
+        "pca_umap_visualization_complete": true,
+        "known_labels_used_after_clustering_only": true,
+        "umap_not_used_for_clustering": true,
+        "task2d_not_executed": true
+      },
+      "task2c_complete": true,
+      "ready_for_task2d": true,
+      "known_labels_used_after_clustering_only": true,
+      "umap_used_for_clustering": false,
+      "task2d_executed": false
+    }
+  },
+  "inputs": {
+    "F:\\Micro-C\\project\\outputs\\task2a_final\\task2a_final_manifest.json": {
+      "size_bytes": 8638,
+      "sha256": "a21de055b596570c566907209d63bc24ef396cb97119fbbaffa36cf79b342963"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_final\\frozen_proposal_protocol.json": {
+      "size_bytes": 1735,
+      "sha256": "15075279e14de5aa398f0dbe1c2cc1b17366af354811c394ad23d6536b819369"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_final\\task2a_final_candidates.csv": {
+      "size_bytes": 47735,
+      "sha256": "635d13d8fe5c091cb779bc78079579f119883ffd29128606bda57138910a0df3"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\task2b_manifest.json": {
+      "size_bytes": 14348,
+      "sha256": "f81e36dda5bbee78dd064471acdca6f271327bd042514d27a0058987bea8c4a7"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\task2b_completion.json": {
+      "size_bytes": 440,
+      "sha256": "91c9ae70b013a84913556dfa8897317e7b68adcd803d432a1a216cf37af2d41f"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\candidate_embeddings.npy": {
+      "size_bytes": 236672,
+      "sha256": "5bd49f4829cd2dfd8dba37bcf218f9675c79073d4505cae12da8761944e98117"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\candidate_embeddings_rep1.npy": {
+      "size_bytes": 236672,
+      "sha256": "1c6efe02086e52725d18b516f48f02133b49518d79bd36668c017dbea6aa2480"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\candidate_embeddings_rep2.npy": {
+      "size_bytes": 236672,
+      "sha256": "951259561279bc31ddb4b48b55b3a53877f7eddbf9f6df09a4ef73493d29cf9e"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\candidate_embedding_metadata.csv": {
+      "size_bytes": 77602,
+      "sha256": "ed6fb3d7e7f7d306619cb61b6a512f1b93fd451bd0803bfbe74c19bf482e6a53"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\reference_embeddings.npy": {
+      "size_bytes": 704640,
+      "sha256": "01568869e99568668454c39bb4379b9956a3cb431fb92b1ecf0d449c13868cc8"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\reference_embedding_metadata.csv": {
+      "size_bytes": 52856,
+      "sha256": "e880ad97e74deb80e538e958d2591c1abc899f531d125844a88ddcfd081c14e8"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\feature_scaler.pkl": {
+      "size_bytes": 7361,
+      "sha256": "e62f126e09c4204ba7f2b235ea9f1b3921a31e63c114cf08eb227b6914bd75fd"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\umap_coordinates.csv": {
+      "size_bytes": 68214,
+      "sha256": "6d4fbb81469501e2efc9086b0d9af688ac4f01619bafadb7c2c71d9fc594327c"
+    },
+    "F:\\Micro-C\\project\\data\\task2_multiscale\\genome_expected_max128.npz": {
+      "size_bytes": 2550,
+      "sha256": "157ae6c5e1b96aeeb0b092f1a9e466aee109ff5a45dce497eb1675a4b9e80122"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale\\frozen_multiscale_protocol.json": {
+      "size_bytes": 6669,
+      "sha256": "734284c9564b8146622e3bd2a61e21360c3c91612185090503b56a3b379e6d01"
+    },
+    "F:\\Micro-C\\micro-c数据\\GSE272159_37C_rep1.mapq_30.10.cool": {
+      "size_bytes": 482254398,
+      "sha256": "0256e10da36abfe0238bf16952bc43bc78365f43c201e6e3ba0c49bd243549a8"
+    },
+    "F:\\Micro-C\\micro-c数据\\GSE272159_37C_rep2.mapq_30.10.cool": {
+      "size_bytes": 468345755,
+      "sha256": "ede9b4f7c0c6b40c8f098e43cdd0abbc0a8987f05e8b37051a5e3cbf143ad106"
+    },
+    "F:\\Micro-C\\project\\src\\task2c\\pipeline.py": {
+      "size_bytes": 13907,
+      "sha256": "247f3f94abd138c076b09109d7532189fe1719b48c249bf27374cba13d53dbda"
+    },
+    "F:\\Micro-C\\project\\src\\task2c\\inputs.py": {
+      "size_bytes": 7590,
+      "sha256": "7f523bd4f134d464d6196531ba2cffddebfdd8fb288ac121f0e5d0842f4bda6b"
+    },
+    "F:\\Micro-C\\project\\src\\task2c\\clustering.py": {
+      "size_bytes": 3636,
+      "sha256": "9649bbbcb729fa5ba5d964f195674c4411655b637915c4622731f5343ed950da"
+    },
+    "F:\\Micro-C\\project\\src\\task2c\\analysis.py": {
+      "size_bytes": 11258,
+      "sha256": "dcaa546eea69b424b30b3576870169e74f7552fb38fcfc566ecdd270dadd829d"
+    },
+    "F:\\Micro-C\\project\\src\\task2c\\reporting.py": {
+      "size_bytes": 18975,
+      "sha256": "7f516202c0ab4155ba6140504c517b026b5357d2519b5a37a2f013be9521ec2c"
+    }
+  },
+  "outputs": {
+    "F:\\Micro-C\\project\\outputs\\task2c\\frozen_task2c_protocol.json": {
+      "size_bytes": 2693,
+      "sha256": "a0e02dc4d7459658b5af2fc0a6360eb232e3f0778f48ebbf51402bb4a3a4c071"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2c\\clustering_pca_model.pkl": {
+      "size_bytes": 29919,
+      "sha256": "21723ddd9dd5d797ff446440d7b474bc68915eb768d546f0c37198af5d37b721"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2c\\clustering_pca_variance.csv": {
+      "size_bytes": 619,
+      "sha256": "d2400eb8c6e72bd8d03f33134ba84056609f3230951c48b969542c0bcd1defa7"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2c\\cluster_membership.csv": {
+      "size_bytes": 49677,
+      "sha256": "eb56f5e7da33709518d925696c80a65b995a0377973124592607c9c33efd2c50"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2c\\clusters.csv": {
+      "size_bytes": 112392,
+      "sha256": "1fdf1929aeefdc6aac44184b7b671f5303fa3c49a456a925c826aaf0224cef0a"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2c\\cluster_summary.csv": {
+      "size_bytes": 1154,
+      "sha256": "b26906a399122c7aaa0b8c47ca75a1f347ed799a5ab39963901482a27a80e0ea"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2c\\cluster_representatives.csv": {
+      "size_bytes": 316,
+      "sha256": "17f2ebb368333f604b2d62f6a0349b51bfc086f09656ed39626c34f045bb8043"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2c\\background_proximity.csv": {
+      "size_bytes": 10116,
+      "sha256": "1725b78b02f2f235e3ff18703f050264e396a1a95296dff30c3f15bb97d16f63"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2c\\clustering_sensitivity.csv": {
+      "size_bytes": 204,
+      "sha256": "515596e9f4008e33b6d0e12f76e9cb9b6424af853cb9b8b4a26f199e49f5b4ce"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2c\\replicate_cluster_stability.csv": {
+      "size_bytes": 7482,
+      "sha256": "57672db130f87140459947dcfc7808d7f8ddb683a923fd27d3b30544d1afbd9f"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2c\\cluster_centroids.npy": {
+      "size_bytes": 6272,
+      "sha256": "37ef5fc3b400b9e0b03c4d1e1a470196a26e1ddfe41bd69351a992eb78bb21f5"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2c\\pca_clusters.png": {
+      "size_bytes": 119982,
+      "sha256": "bf4a8768fbe2e1e56032ab6cb3399cb90f15782cb1589fe473390e663d3dc3ff"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2c\\pca_known_composition.png": {
+      "size_bytes": 119312,
+      "sha256": "525df12a05b3ba001465a99232b6aba1f26bfcece8f351c69bf1073d1ed94578"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2c\\umap_clusters.png": {
+      "size_bytes": 142433,
+      "sha256": "7b34159b85acf0ba71d2fbffe04c2a21727a525e5b8030e9feadd8b1f057060b"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2c\\umap_known_composition.png": {
+      "size_bytes": 138970,
+      "sha256": "49d75b4aa01b08ced52652300a9f07a46586adeaeb336d2d1e75ed50fe6058f4"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2c\\cluster_overviews\\cluster_000_overview.png": {
+      "size_bytes": 236354,
+      "sha256": "db56121a93cacafe29e2a4fa9686d33f62e1d2588c56f58baf330dd52c97a6b6"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2c\\cluster_overviews\\cluster_001_overview.png": {
+      "size_bytes": 359560,
+      "sha256": "448d178232a7740e3554bda70bbdc071abd3700bad312b5d1601943836680e3e"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2c\\cluster_overviews\\cluster_002_overview.png": {
+      "size_bytes": 307678,
+      "sha256": "61b70d9a8b65c2616e43cd34d115e5dc1990ee5137f3a9f03c0c8e654d183821"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2c\\task2c_completion.json": {
+      "size_bytes": 772,
+      "sha256": "c4a6c9ef8a7a229059550892875525b15f25d653c973a404ea0c20d05836f3e1"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2c\\task2c_summary.md": {
+      "size_bytes": 6718,
+      "sha256": "35e364d269098a820479601ba027487a65973539974fcf8dc886b00f745a126a"
+    }
+  }
+}

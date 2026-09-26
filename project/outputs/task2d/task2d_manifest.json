@@ -1,0 +1,205 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-09-25T02:30:19.079352+00:00",
+  "configuration": {
+    "version": "Task2D-Cross-Replicate-Reproducibility-v1",
+    "mode": "full",
+    "frozen_task2d_protocol_sha256": "40599d9f7c8082f31f344f7668390d1b8688ac6608eb5aad474d094c5c6cd3b3",
+    "task2c_manifest_sha256": "18c9aae90ccea39639360cf4d46ae8f70f366268c708d65f7393ad6bcf6f4537",
+    "task2c_membership_sha256": "eb56f5e7da33709518d925696c80a65b995a0377973124592607c9c33efd2c50",
+    "candidate_list_sha256": "635d13d8fe5c091cb779bc78079579f119883ffd29128606bda57138910a0df3",
+    "candidate_embedding_sha256": "5bd49f4829cd2dfd8dba37bcf218f9675c79073d4505cae12da8761944e98117",
+    "genome_expected_sha256": "157ae6c5e1b96aeeb0b092f1a9e466aee109ff5a45dce497eb1675a4b9e80122",
+    "rep1_cool_sha256": "0256e10da36abfe0238bf16952bc43bc78365f43c201e6e3ba0c49bd243549a8",
+    "rep2_cool_sha256": "ede9b4f7c0c6b40c8f098e43cdd0abbc0a8987f05e8b37051a5e3cbf143ad106",
+    "primary_window_rule": {
+      "source": "Task2A frozen best_scale and representative center",
+      "small": 3200,
+      "medium": 6400,
+      "large": 12800
+    },
+    "canonical_window_bp": 6400,
+    "oe_rule": "unclipped raw matrix divided by that replicate's validated genome-wide E(distance); nonpositive expected invalid",
+    "correlation_mask": "i < j and abs(i-j) > 2, paired finite O/E and positive expected",
+    "pearson_implementation": "scipy.stats.pearsonr on valid masked O/E values",
+    "spearman_implementation": "scipy.stats.spearmanr on valid masked O/E values",
+    "known_control_floor": "5th percentile of valid 344 Known canonical Pearson and Spearman separately; nonfinite or negative floor stops binary filtering",
+    "pearson_floor": 0.31186150698910403,
+    "spearman_floor": 0.27573844201209236,
+    "strict_novel_cluster_rule": "Task2C novel_like flag AND >=5 candidates AND zero Known AND zero claimed-member genomic Known overlap AND >=80% of valid candidate members pass",
+    "strict_cluster_pass_fraction": 0.8,
+    "seed": 20260920,
+    "numpy_version": "2.4.4",
+    "scipy_version": "1.18.1"
+  },
+  "environment": {
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "numpy": "2.4.4",
+    "pandas": "2.3.3"
+  },
+  "statistics": {
+    "n_candidates": 231,
+    "n_known": 344,
+    "n_background": 344,
+    "candidate_valid_count": 231,
+    "known_valid_count": 344,
+    "background_valid_count": 344,
+    "n_reproducible_by_known_floor": 144,
+    "n_strict_novel_candidate": 0,
+    "completion": {
+      "mode": "full",
+      "checks": {
+        "upstream_artifacts_frozen": true,
+        "frozen_task2d_protocol": true,
+        "all_eligible_candidates_evaluated": true,
+        "known_positive_controls_evaluated": true,
+        "background_controls_evaluated": true,
+        "known_control_calibration_valid": true,
+        "cluster_reproducibility_complete": true,
+        "noise_and_clustered_candidate_tables_complete": true,
+        "candidate_final_status_complete": true,
+        "no_model_training_or_upstream_modification": true
+      },
+      "task2d_complete": true,
+      "scientific_full_result": true,
+      "task2_finalized": false
+    }
+  },
+  "inputs": {
+    "F:\\Micro-C\\project\\outputs\\task2a_final\\task2a_final_manifest.json": {
+      "size_bytes": 8638,
+      "sha256": "a21de055b596570c566907209d63bc24ef396cb97119fbbaffa36cf79b342963"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\task2b_manifest.json": {
+      "size_bytes": 14348,
+      "sha256": "f81e36dda5bbee78dd064471acdca6f271327bd042514d27a0058987bea8c4a7"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2c\\task2c_manifest.json": {
+      "size_bytes": 11511,
+      "sha256": "18c9aae90ccea39639360cf4d46ae8f70f366268c708d65f7393ad6bcf6f4537"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_final\\task2a_finalization.json": {
+      "size_bytes": 521,
+      "sha256": "a50671062924af687401e844d95248d27409312faaa4155d6ffa135b09b0deec"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\task2b_completion.json": {
+      "size_bytes": 440,
+      "sha256": "91c9ae70b013a84913556dfa8897317e7b68adcd803d432a1a216cf37af2d41f"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2c\\task2c_completion.json": {
+      "size_bytes": 772,
+      "sha256": "c4a6c9ef8a7a229059550892875525b15f25d653c973a404ea0c20d05836f3e1"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_final\\task2a_final_candidates.csv": {
+      "size_bytes": 47735,
+      "sha256": "635d13d8fe5c091cb779bc78079579f119883ffd29128606bda57138910a0df3"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\candidate_embeddings.npy": {
+      "size_bytes": 236672,
+      "sha256": "5bd49f4829cd2dfd8dba37bcf218f9675c79073d4505cae12da8761944e98117"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2b\\reference_embedding_metadata.csv": {
+      "size_bytes": 52856,
+      "sha256": "e880ad97e74deb80e538e958d2591c1abc899f531d125844a88ddcfd081c14e8"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2c\\cluster_membership.csv": {
+      "size_bytes": 49677,
+      "sha256": "eb56f5e7da33709518d925696c80a65b995a0377973124592607c9c33efd2c50"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2c\\clusters.csv": {
+      "size_bytes": 112392,
+      "sha256": "1fdf1929aeefdc6aac44184b7b671f5303fa3c49a456a925c826aaf0224cef0a"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2c\\cluster_summary.csv": {
+      "size_bytes": 1154,
+      "sha256": "b26906a399122c7aaa0b8c47ca75a1f347ed799a5ab39963901482a27a80e0ea"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_multiscale\\frozen_multiscale_protocol.json": {
+      "size_bytes": 6669,
+      "sha256": "734284c9564b8146622e3bd2a61e21360c3c91612185090503b56a3b379e6d01"
+    },
+    "F:\\Micro-C\\project\\data\\task2_multiscale\\genome_expected_max128.npz": {
+      "size_bytes": 2550,
+      "sha256": "157ae6c5e1b96aeeb0b092f1a9e466aee109ff5a45dce497eb1675a4b9e80122"
+    },
+    "F:\\Micro-C\\micro-c数据\\GSE272159_37C_rep1.mapq_30.10.cool": {
+      "size_bytes": 482254398,
+      "sha256": "0256e10da36abfe0238bf16952bc43bc78365f43c201e6e3ba0c49bd243549a8"
+    },
+    "F:\\Micro-C\\micro-c数据\\GSE272159_37C_rep2.mapq_30.10.cool": {
+      "size_bytes": 468345755,
+      "sha256": "ede9b4f7c0c6b40c8f098e43cdd0abbc0a8987f05e8b37051a5e3cbf143ad106"
+    },
+    "F:\\Micro-C\\project\\src\\task2d\\pipeline.py": {
+      "size_bytes": 11205,
+      "sha256": "6a486c9a409cb923bcdf068b6f3439272dc1c27a302335f990680f8d9d6a8b1a"
+    },
+    "F:\\Micro-C\\project\\src\\task2d\\inputs.py": {
+      "size_bytes": 11320,
+      "sha256": "45e8f7487460bdac62352c01d884aa9a9ecea8b90c2d0234c91225797ce992a5"
+    },
+    "F:\\Micro-C\\project\\src\\task2d\\reproducibility.py": {
+      "size_bytes": 5143,
+      "sha256": "5f6bd7b46236a22e1b2fc34fe0cfa579081ada44e94846bcd7e31476bcf4e54e"
+    },
+    "F:\\Micro-C\\project\\src\\task2d\\analysis.py": {
+      "size_bytes": 8542,
+      "sha256": "1262ab5556556385d478a0b732c715ded0d705afe2512fe5bc7e7e739e98424a"
+    },
+    "F:\\Micro-C\\project\\src\\task2d\\reporting.py": {
+      "size_bytes": 6007,
+      "sha256": "6dd75edb4f192718e51c28c50d2e5f6aa7704ab0921cb401a8b92e41f8818f93"
+    },
+    "F:\\Micro-C\\project\\src\\data\\load_microc.py": {
+      "size_bytes": 5192,
+      "sha256": "e4e7772c98a5fdf7fc3665413bfbf3fcf1444d2e878d85b85c63766d6b72ac09"
+    }
+  },
+  "outputs": {
+    "F:\\Micro-C\\project\\outputs\\task2d\\frozen_task2d_protocol.json": {
+      "size_bytes": 3354,
+      "sha256": "40599d9f7c8082f31f344f7668390d1b8688ac6608eb5aad474d094c5c6cd3b3"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2d\\candidate_reproducibility.csv": {
+      "size_bytes": 234943,
+      "sha256": "032d6d4dc058613e5b8eaa04b084572bfe5e598ed304bf5f426989159bee2436"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2d\\known_reproducibility.csv": {
+      "size_bytes": 80412,
+      "sha256": "f7c5cc439d872b540799651afda0f3bfe5d795cb6ad2d28e2f0cd95f26a7db2f"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2d\\background_reproducibility.csv": {
+      "size_bytes": 79530,
+      "sha256": "ed537b879bcc952c7eba840bbdd91e6425e0dd7b04e6bda09259589d4fcef6be"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2d\\known_reproducibility_distribution.csv": {
+      "size_bytes": 1155,
+      "sha256": "a2cb9a8e6efef478380db2972e10be67f888dee772d85727245c8ba1f72c6a8a"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2d\\cluster_reproducibility_summary.csv": {
+      "size_bytes": 381,
+      "sha256": "4a128629955cbbe8930de8413a1c251e65addb5258b04e23b89e4d32b0caacaf"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2d\\noise_candidate_reproducibility.csv": {
+      "size_bytes": 16959,
+      "sha256": "2c125aa78343715c65ecfc9794ce31e965c7b53313b0cfb58c773398ad84d4ff"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2d\\unannotated_clustered_reproducibility.csv": {
+      "size_bytes": 100391,
+      "sha256": "ce32d7f5ec9cce60e581d072e11755eb33427a0b62cd5c7230801acb4b4084fa"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2d\\reproducibility_thresholds.json": {
+      "size_bytes": 257,
+      "sha256": "2146f4e32a27d6278e2f297bd05f466f88e717c71d09d6dce7ba6276133e5833"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2d\\task2d_completion.json": {
+      "size_bytes": 607,
+      "sha256": "739de3e8f87c78ab0ddfa6c81e43e0d8e2d9fb77cfb897643205770efb7c9d64"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2d\\task2d_summary.md": {
+      "size_bytes": 5514,
+      "sha256": "971eb20592a5af1de0d4762d65cf85ee216b76e5a8771badf2ded0269d96cb5f"
+    }
+  }
+}

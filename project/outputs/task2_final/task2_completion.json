@@ -1,0 +1,22 @@
+{
+  "checks": {
+    "task2a_finalized": true,
+    "task2b_complete": true,
+    "task2c_complete": true,
+    "task2d_reproducibility_complete": true,
+    "all_eligible_candidates_evaluated": true,
+    "known_positive_control_evaluated": true,
+    "background_reference_evaluated": true,
+    "cluster_level_reproducibility_complete": true,
+    "candidate_final_status_complete": true,
+    "strict_novel_list_generated": true,
+    "followup_unannotated_list_generated": true,
+    "heatmap_protocol_completed": true,
+    "final_manifest_generated": true,
+    "final_summary_generated": true,
+    "no_upstream_result_modified": true
+  },
+  "task2_complete": true,
+  "strict_novel_structure_detected": false,
+  "task3_executed": false
+}

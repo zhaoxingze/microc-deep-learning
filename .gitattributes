@@ -1,0 +1,5 @@
+# Preserve published experimental tables and manifest bytes across checkouts.
+project/outputs/** -text
+project/data/splits/** -text
+project/data/task2/** -text
+project/data/task2_multiscale/** -text

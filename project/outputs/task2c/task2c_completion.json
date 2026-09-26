@@ -1,0 +1,22 @@
+{
+  "checks": {
+    "candidate_embeddings_metadata_aligned": true,
+    "known_reference_metadata_aligned": true,
+    "clustering_pca_complete": true,
+    "primary_hdbscan_complete": true,
+    "cluster_membership_complete": true,
+    "cluster_summary_complete": true,
+    "known_like_annotation_complete": true,
+    "novel_like_identification_complete": true,
+    "centroids_and_medoids_complete": true,
+    "pca_umap_visualization_complete": true,
+    "known_labels_used_after_clustering_only": true,
+    "umap_not_used_for_clustering": true,
+    "task2d_not_executed": true
+  },
+  "task2c_complete": true,
+  "ready_for_task2d": true,
+  "known_labels_used_after_clustering_only": true,
+  "umap_used_for_clustering": false,
+  "task2d_executed": false
+}

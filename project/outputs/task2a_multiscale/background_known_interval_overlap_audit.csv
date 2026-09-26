@@ -1,0 +1,10 @@
+﻿scale,split,background_window_count,overlap_count
+large,calibration,147,0
+large,train,708,0
+large,validation,204,0
+medium,calibration,431,0
+medium,train,2144,0
+medium,validation,531,0
+small,calibration,1054,0
+small,train,5337,0
+small,validation,1251,0

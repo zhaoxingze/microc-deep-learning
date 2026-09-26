@@ -1,0 +1,471 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-09-22T14:22:36.776334+00:00",
+  "configuration": {
+    "version": "task2a.2-calibrated-v1",
+    "tail_formula": "(1 + count(cal >= x))/(n+1)",
+    "tail_direction": "upper",
+    "ties": "inclusive",
+    "anomaly_formula": "-log10(p)",
+    "replicate_combination": "mean anomaly within branch, then max between branches",
+    "primary_score": "max(paired_density_anomaly,paired_shape_anomaly)",
+    "minimum_p": "1/(n_calibration+1)",
+    "bonferroni": "min(1,2*min(p_density,p_shape)), per-replicate explanatory field only",
+    "paired_p_interpretation": "averaged negative logs are ranking scores, not a proven combined p-value",
+    "split_target": [
+      0.7,
+      0.15,
+      0.15
+    ],
+    "split_method": "one seeded shuffle of sorted whole blocks",
+    "nms_radius_bp": 3200,
+    "nms_condition": "same chromosome, center distance strictly < radius",
+    "region_rule": "assign to first higher-ranked nearby peak; keep 800-bp contiguous support component containing peak; bounds=min(start),max(end); no peak merging",
+    "tie_rule": "descending score then ascending SHA256(seed|window_id)",
+    "mixed_branch": "both paired anomalies >= -log10(0.05); diagnostic only",
+    "coverage_budgets": [
+      0.05,
+      0.1,
+      0.2,
+      0.3
+    ],
+    "curve_budgets": [
+      0.0,
+      0.01,
+      0.02,
+      0.03,
+      0.04,
+      0.05,
+      0.06,
+      0.07,
+      0.08,
+      0.09,
+      0.1,
+      0.11,
+      0.12,
+      0.13,
+      0.14,
+      0.15,
+      0.16,
+      0.17,
+      0.18,
+      0.19,
+      0.2,
+      0.21,
+      0.22,
+      0.23,
+      0.24,
+      0.25,
+      0.26,
+      0.27,
+      0.28,
+      0.29,
+      0.3,
+      0.31,
+      0.32,
+      0.33,
+      0.34,
+      0.35,
+      0.36,
+      0.37,
+      0.38,
+      0.39,
+      0.4
+    ],
+    "coverage_selection": "whole ranked regions until union >= target; overshoot retained",
+    "recall": "unique known center in half-open selected-region union",
+    "auxiliary_recall": "known interval overlaps selected-region union > 0 bp",
+    "random_domain": "linear chromosome, no circular wrap-around",
+    "coverage_random": "permuted existing scan windows, greedy union target, 2% tolerance, 32 attempts",
+    "region_random": "independent uniform integer starts within chromosome, exact count and length multiset; overlap permitted",
+    "random_interval": "empirical 2.5/97.5 percentiles over random repetitions; not confidence interval on mean",
+    "readiness": [
+      "overall at10 > coverage random97.5",
+      "overall at20 > coverage random97.5",
+      "all classes at20 positive and >= region random2.5",
+      "zero-axis enrichment at20 <=1",
+      "replicate OR Spearman>0",
+      "abs(paired branch Spearman)<0.9",
+      "three-way no genomic overlap"
+    ],
+    "coverage_evidence_validity": "readiness comparison requires budget reached and >=100 repeats all within 2% coverage tolerance; invalid evidence fails closed",
+    "known_interval_safety": "inherited center exclusion unchanged; audit partial Train/Val known interval overlaps; abort if any Calibration interval overlaps known interval",
+    "zero_axis_definition": "windows with centers in selected20 region union / all scan windows",
+    "task_boundary": "Task2A only; never invoke Task2B even if ready",
+    "shape_preprocessing": {
+      "input": "genome_OE",
+      "clip_percentile": 99.5,
+      "clip_fit": "background_train_only",
+      "transform": "log1p then per-window (x-median)/(1.4826*MAD+1e-8)",
+      "valid_mask": "upper triangle distance>2 bins",
+      "MAD_le_1e-8_fallback_scale": 1.0,
+      "normalized_clip": [
+        -10,
+        10
+      ]
+    },
+    "AE_loss": "full-pixel MSE, unchanged architecture",
+    "shape_score": "upper triangle distance>2 MSE",
+    "density_score": "upper triangle distance>2 mean genome O/E",
+    "best_known_scores": "all best fields from highest OR-ranked interval-overlapping window; separate independent maxima also saved",
+    "frozen_at_utc": "2026-09-22T14:04:25.421139+00:00",
+    "mode": "full",
+    "random_seed": 20260920,
+    "random_repetitions": 100,
+    "window_bp": 6400,
+    "step_bp": 800,
+    "target_bin_size": 100,
+    "chromosome_size": 4641652,
+    "evaluation_domain_size": 4641652,
+    "block_bp": 128000,
+    "background_counts": {
+      "train": 1263,
+      "validation": 411,
+      "calibration": 258
+    },
+    "block_counts": {
+      "train": 26,
+      "validation": 6,
+      "calibration": 5
+    },
+    "oe_clip_values": {
+      "rep1": 7.069284299283791,
+      "rep2": 6.868703608532452
+    },
+    "actual_background_fractions": {
+      "train": 0.6537267080745341,
+      "validation": 0.2127329192546584,
+      "calibration": 0.13354037267080746
+    },
+    "known_interval_overlap_counts": {
+      "train": 3,
+      "validation": 7,
+      "calibration": 0
+    },
+    "epochs": 120,
+    "patience": 15,
+    "batch_size": 32,
+    "learning_rate": 0.001,
+    "architecture": "BackgroundAutoencoder(\n  (encoder): Sequential(\n    (0): Conv2d(1, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\n    (1): ReLU(inplace=True)\n    (2): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)\n    (3): Conv2d(16, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\n    (4): ReLU(inplace=True)\n    (5): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)\n    (6): Conv2d(32, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\n    (7): ReLU(inplace=True)\n  )\n  (decoder): Sequential(\n    (0): Conv2d(64, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\n    (1): ReLU(inplace=True)\n    (2): Upsample(scale_factor=2.0, mode='bilinear')\n    (3): Conv2d(32, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\n    (4): ReLU(inplace=True)\n    (5): Upsample(scale_factor=2.0, mode='bilinear')\n    (6): Conv2d(16, 1, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\n  )\n)",
+    "torch_version": "2.14.0+cpu",
+    "torch_num_threads": 4,
+    "code_sha256": {
+      "F:\\Micro-C\\project\\src\\task2\\__init__.py": "9f1dcd251f5bab8d511b4661b66cf851bd7b63f7776f45fa6597c54569ae35c8",
+      "F:\\Micro-C\\project\\src\\task2\\autoencoder.py": "616557a7b78a999d1d7e83add73dcd776939e4d888bed7977c54e968d2a657ab",
+      "F:\\Micro-C\\project\\src\\task2\\background.py": "a96a5b44b37eda7e84c64346225ed15c580646c6c62a80e2ca1307b86308d0c2",
+      "F:\\Micro-C\\project\\src\\task2\\calibrated_evaluation.py": "83e9e124d8112c5ec291547ebdae5bed93e3810b45dc2130ff9f844336bf481f",
+      "F:\\Micro-C\\project\\src\\task2\\calibrated_pipeline.py": "8b6dfed2e7a4617eb0667f6e1fa6853ae62a28cb8320a67786757884325d707c",
+      "F:\\Micro-C\\project\\src\\task2\\calibrated_reporting.py": "56d2fe991281779de273e7aa30422a77ac2f15ae420cd97654f21b69ec2d0e0b",
+      "F:\\Micro-C\\project\\src\\task2\\calibration.py": "7e207b8515d2bee344a1ee4a8dac21c9d1d3347b092f46391733e5f4ea4b078d",
+      "F:\\Micro-C\\project\\src\\task2\\expected.py": "a0e2fb142da162ec522c168683c073f4ff1c391b6eb775d87741da28e9690250",
+      "F:\\Micro-C\\project\\src\\task2\\pipeline.py": "9501a94ea7190193b5b02f009fceb3907905b5e62bf5a514c3431c9bdd2321f4",
+      "F:\\Micro-C\\project\\src\\task2\\recall.py": "8d6a47b7d19f34ff940df665dfba0c959a2d5f16d0bd16f6e0fe5eda9375093b",
+      "F:\\Micro-C\\project\\src\\task2\\refined_evaluation.py": "3a7bed98b0716e6a1a821c0f5369d011c89588d89c58c4f9386428d103853c85",
+      "F:\\Micro-C\\project\\src\\task2\\region_detection.py": "55c9e4a1ebc0cd3b7f14e08ad94b39305a037189f45f6d67fcb625d779659fba",
+      "F:\\Micro-C\\project\\src\\task2\\reporting.py": "5ac395247d19cc84c57da3d2a2acde07eee09310e478c58508d92266bdc1f57e",
+      "F:\\Micro-C\\project\\src\\task2\\scoring.py": "2adba3e4cdb5e541a019de7b7fbb0861ffad45ddca3d0b7b36aef75ea748537e",
+      "F:\\Micro-C\\project\\src\\task2\\shape_preprocessing.py": "1d9973a7234143b26933b3d90fb1aca5f02f4fd4819e50acace864424f6293e2",
+      "F:\\Micro-C\\project\\src\\task2\\window_scan.py": "e458df9ca8e3cf35ee8fe895b28593897bda6d17c77949986e9789328f04b86f",
+      "F:\\Micro-C\\project\\scripts\\run_task2a.py": "2306db809a0ec8202c70b029e145a3e20d31488587f470fab6178f64cfa409b8"
+    },
+    "split_sha256": "5fe596d172c38cfd6c0fe15c66d4c9753f10a9a1a97bc8530d4bf32e2e4918e2",
+    "cache_validation": {
+      "reused": true,
+      "reference_manifest": "F:\\Micro-C\\project\\outputs\\task2a_refined\\task2a_refined_manifest.json",
+      "original_background_rows": 5795
+    },
+    "best_epoch": 119,
+    "best_validation_loss": 0.345369810388036
+  },
+  "environment": {
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "numpy": "2.4.4",
+    "pandas": "2.3.3"
+  },
+  "statistics": {
+    "n_windows": 5795,
+    "n_known_structures": 344,
+    "n_candidate_regions": 1224,
+    "background_counts": {
+      "train": 1263,
+      "validation": 411,
+      "calibration": 258
+    },
+    "block_counts": {
+      "train": 26,
+      "validation": 6,
+      "calibration": 5
+    },
+    "best_epoch": 119,
+    "known_interval_overlap_counts": {
+      "train": 3,
+      "validation": 7,
+      "calibration": 0
+    },
+    "best_validation_loss": 0.345369810388036,
+    "correlations": {
+      "replicates": {
+        "pearson": 0.8550841687186909,
+        "spearman": 0.8695980344501323
+      },
+      "branches": {
+        "pearson": -0.3374839134893235,
+        "spearman": -0.4311313886166414
+      }
+    },
+    "zero_axis": {
+      "budget": 0.2,
+      "definition": "scan window centers within selected region union",
+      "all_count": 5795,
+      "selected_count": 1171,
+      "all_zero_count": 539,
+      "selected_zero_count": 65,
+      "all_rate": 0.09301121656600518,
+      "selected_rate": 0.05550811272416738,
+      "enrichment": 0.59678944941846
+    },
+    "robust_scales_train_diagnostic": {
+      "rep1": {
+        "density_median": 0.6549139619414392,
+        "density_mad": 0.24257990457406292,
+        "shape_median": 0.45599064230918884,
+        "shape_mad": 0.07736948132514954
+      },
+      "rep2": {
+        "density_median": 0.6649485142245908,
+        "density_mad": 0.2443074882849831,
+        "shape_median": 0.4586443603038788,
+        "shape_mad": 0.08306506276130676
+      }
+    },
+    "readiness": {
+      "checks": {
+        "beats_coverage_random_at_10pct": false,
+        "beats_coverage_random_at_20pct": false,
+        "all_classes_positive_not_below_region_random_low_at_20pct": true,
+        "zero_axis_enrichment_le_one": true,
+        "replicate_spearman_positive": true,
+        "branch_abs_spearman_lt_point9": true,
+        "train_validation_calibration_no_overlap": true
+      },
+      "ready_for_task2b": false,
+      "task2b_executed": false,
+      "smoke_not_scientific": false,
+      "coverage_evidence_valid_10pct": true,
+      "coverage_evidence_valid_20pct": true
+    },
+    "ready_for_task2b": false,
+    "minimum_empirical_p": 0.003861003861003861,
+    "calibrated_or_unique_scores": 2605,
+    "calibrated_or_max_ties": 109
+  },
+  "inputs": {
+    "F:\\Micro-C\\micro-c数据\\GSE272159_37C_rep1.mapq_30.10.cool": {
+      "size_bytes": 482254398,
+      "sha256": "0256e10da36abfe0238bf16952bc43bc78365f43c201e6e3ba0c49bd243549a8"
+    },
+    "F:\\Micro-C\\micro-c数据\\GSE272159_37C_rep2.mapq_30.10.cool": {
+      "size_bytes": 468345755,
+      "sha256": "ede9b4f7c0c6b40c8f098e43cdd0abbc0a8987f05e8b37051a5e3cbf143ad106"
+    },
+    "F:\\Micro-C\\project\\data\\processed\\structures.csv": {
+      "size_bytes": 37408,
+      "sha256": "8ae5e792482a06a32a3fa85705505e5bbc1cf5957b0fca78ccee8e09bd51d7a6"
+    },
+    "F:\\Micro-C\\project\\data\\task2\\genome_windows_metadata.csv": {
+      "size_bytes": 1635250,
+      "sha256": "4517a7344698eeed27250ba77cc36ad66ab7cde4ea5e33d729712aeaaa057c5e"
+    },
+    "F:\\Micro-C\\project\\data\\task2\\genome_windows_rep1.npy": {
+      "size_bytes": 94945408,
+      "sha256": "ed8d56b1b6dc09e2ce3b6a33baa1a1918b8ab97e079f71a7fd9a5e471b26c039"
+    },
+    "F:\\Micro-C\\project\\data\\task2\\genome_windows_rep2.npy": {
+      "size_bytes": 94945408,
+      "sha256": "545c63cc59a0705f82e4b9373b52d5559025ea80eb97de4fb22426cd572f2286"
+    },
+    "F:\\Micro-C\\project\\data\\task2\\genome_expected.npz": {
+      "size_bytes": 1526,
+      "sha256": "975ffe1f8453f39bc11b0d32ae62c7fee642e98c785d4517ed02052dfc1f883f"
+    },
+    "F:\\Micro-C\\project\\data\\task2\\background_split.csv": {
+      "size_bytes": 975904,
+      "sha256": "b7fab09e91be6f0e0e641a7b7240e9563a65d784e68f6eebf1014298da9f0d72"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_refined\\task2a_refined_manifest.json": {
+      "size_bytes": 20560,
+      "sha256": "d9a84b2353313972b1cd49683aef5bc78b9ccfacebd6070b1db3c375cd6ae5d2"
+    },
+    "F:\\Micro-C\\project\\src\\task2\\__init__.py": {
+      "size_bytes": 55,
+      "sha256": "9f1dcd251f5bab8d511b4661b66cf851bd7b63f7776f45fa6597c54569ae35c8"
+    },
+    "F:\\Micro-C\\project\\src\\task2\\autoencoder.py": {
+      "size_bytes": 9945,
+      "sha256": "616557a7b78a999d1d7e83add73dcd776939e4d888bed7977c54e968d2a657ab"
+    },
+    "F:\\Micro-C\\project\\src\\task2\\background.py": {
+      "size_bytes": 8682,
+      "sha256": "a96a5b44b37eda7e84c64346225ed15c580646c6c62a80e2ca1307b86308d0c2"
+    },
+    "F:\\Micro-C\\project\\src\\task2\\calibrated_evaluation.py": {
+      "size_bytes": 11895,
+      "sha256": "83e9e124d8112c5ec291547ebdae5bed93e3810b45dc2130ff9f844336bf481f"
+    },
+    "F:\\Micro-C\\project\\src\\task2\\calibrated_pipeline.py": {
+      "size_bytes": 21051,
+      "sha256": "8b6dfed2e7a4617eb0667f6e1fa6853ae62a28cb8320a67786757884325d707c"
+    },
+    "F:\\Micro-C\\project\\src\\task2\\calibrated_reporting.py": {
+      "size_bytes": 11507,
+      "sha256": "56d2fe991281779de273e7aa30422a77ac2f15ae420cd97654f21b69ec2d0e0b"
+    },
+    "F:\\Micro-C\\project\\src\\task2\\calibration.py": {
+      "size_bytes": 3617,
+      "sha256": "7e207b8515d2bee344a1ee4a8dac21c9d1d3347b092f46391733e5f4ea4b078d"
+    },
+    "F:\\Micro-C\\project\\src\\task2\\expected.py": {
+      "size_bytes": 3947,
+      "sha256": "a0e2fb142da162ec522c168683c073f4ff1c391b6eb775d87741da28e9690250"
+    },
+    "F:\\Micro-C\\project\\src\\task2\\pipeline.py": {
+      "size_bytes": 36779,
+      "sha256": "9501a94ea7190193b5b02f009fceb3907905b5e62bf5a514c3431c9bdd2321f4"
+    },
+    "F:\\Micro-C\\project\\src\\task2\\recall.py": {
+      "size_bytes": 7232,
+      "sha256": "8d6a47b7d19f34ff940df665dfba0c959a2d5f16d0bd16f6e0fe5eda9375093b"
+    },
+    "F:\\Micro-C\\project\\src\\task2\\refined_evaluation.py": {
+      "size_bytes": 10544,
+      "sha256": "3a7bed98b0716e6a1a821c0f5369d011c89588d89c58c4f9386428d103853c85"
+    },
+    "F:\\Micro-C\\project\\src\\task2\\region_detection.py": {
+      "size_bytes": 4546,
+      "sha256": "55c9e4a1ebc0cd3b7f14e08ad94b39305a037189f45f6d67fcb625d779659fba"
+    },
+    "F:\\Micro-C\\project\\src\\task2\\reporting.py": {
+      "size_bytes": 18584,
+      "sha256": "5ac395247d19cc84c57da3d2a2acde07eee09310e478c58508d92266bdc1f57e"
+    },
+    "F:\\Micro-C\\project\\src\\task2\\scoring.py": {
+      "size_bytes": 8254,
+      "sha256": "2adba3e4cdb5e541a019de7b7fbb0861ffad45ddca3d0b7b36aef75ea748537e"
+    },
+    "F:\\Micro-C\\project\\src\\task2\\shape_preprocessing.py": {
+      "size_bytes": 3628,
+      "sha256": "1d9973a7234143b26933b3d90fb1aca5f02f4fd4819e50acace864424f6293e2"
+    },
+    "F:\\Micro-C\\project\\src\\task2\\window_scan.py": {
+      "size_bytes": 4833,
+      "sha256": "e458df9ca8e3cf35ee8fe895b28593897bda6d17c77949986e9789328f04b86f"
+    },
+    "F:\\Micro-C\\project\\scripts\\run_task2a.py": {
+      "size_bytes": 2125,
+      "sha256": "2306db809a0ec8202c70b029e145a3e20d31488587f470fab6178f64cfa409b8"
+    }
+  },
+  "outputs": {
+    "F:\\Micro-C\\project\\outputs\\task2a_calibrated\\background_known_interval_overlap_audit.csv": {
+      "size_bytes": 827,
+      "sha256": "04c9fdf1ae98ca29c69793434889d3ff34c86a858b35884433f6fb1c08db230a"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_calibrated\\branch_correlation.csv": {
+      "size_bytes": 62,
+      "sha256": "794ad78620ee0a126f0140a68bc7ef1477ad921fb6fd87e34c40aa95c67d3b13"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_calibrated\\calibration.json": {
+      "size_bytes": 38526,
+      "sha256": "c4bf11535578e75c464548b951dbaad193feec31bb82603bc4b83ed79945b1b1"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_calibrated\\candidate_regions.csv": {
+      "size_bytes": 333351,
+      "sha256": "3a67963d327e5288abe6e7f57dc2bb1411e4c9dbf60e0d4e224ab059c0bd25b4"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_calibrated\\candidate_scores.csv": {
+      "size_bytes": 8127726,
+      "sha256": "c34f81b1a004b8843f7d1fd3fddc1cd13c92b2e57ad6c88d682e4fbed42507a0"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_calibrated\\coverage_random_baseline.csv": {
+      "size_bytes": 1817,
+      "sha256": "0f02dfc8098db60de3f0bf14d404fad7eaa52f2de099fdce06ca609d631b4943"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_calibrated\\coverage_recall_curve.csv": {
+      "size_bytes": 7632,
+      "sha256": "371597dda5825bd9d502022448fb1466ace66461339339f85c068cf70bc03952"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_calibrated\\coverage_recall_curve.png": {
+      "size_bytes": 67316,
+      "sha256": "9c07602a0d5d5d706a1ce8328027113a3d556f81d37dbb4573e74230d1cfa397"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_calibrated\\detector_comparison.csv": {
+      "size_bytes": 15108,
+      "sha256": "86c8672b66d0e5b893564cc33eedd777f83370922389c7f2766e461c7c5e5a77"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_calibrated\\frozen_protocol.json": {
+      "size_bytes": 8209,
+      "sha256": "130a8f9e1437614857088f319f5455d71dc6c87120fcc58ba25b0ad442bd943c"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_calibrated\\known_score_distributions.png": {
+      "size_bytes": 100562,
+      "sha256": "9f52c4a4bd079c6c51d05b1a0e36e44081bba3b7c31aa9ac15caaff254d890e2"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_calibrated\\known_structure_detection_audit.csv": {
+      "size_bytes": 98976,
+      "sha256": "80c80f492404b82d52b256dbc665bc343ebd39f11d3e800eee405f841a20e97d"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_calibrated\\missed_known_summary.csv": {
+      "size_bytes": 1428,
+      "sha256": "7db7fbc5c368fe36d293b91a752500ef48a3dfa313061957efdd284aa649c141"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_calibrated\\protected_artifacts_audit.json": {
+      "size_bytes": 24422,
+      "sha256": "00ff107074810cbc680124fe8044e1952bdce897ca1c77b57a2d9127f98e8cd6"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_calibrated\\protected_artifacts_before.json": {
+      "size_bytes": 24074,
+      "sha256": "359fe7300c33f8b3065914141190422c929dfad38b37a74f185bf67d855a197b"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_calibrated\\random_baseline_draws.csv": {
+      "size_bytes": 151573,
+      "sha256": "2d8602f46044d70e6a68cdb47f50aa09b2b8811c9e03d56dcb962dc896d1a8dc"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_calibrated\\region_membership.csv": {
+      "size_bytes": 399903,
+      "sha256": "09e1a1f0403ad185fb547c706eb0965d60278483cbcdbadb45b0200acd7520b3"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_calibrated\\region_random_baseline.csv": {
+      "size_bytes": 1791,
+      "sha256": "f3bbe2b0ebd13a29a9280075797fa22f28517528580e2f3dc7d6f0f89afcd457"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_calibrated\\replicate_consistency.csv": {
+      "size_bytes": 60,
+      "sha256": "2b9dd95741d7b281ea196eaac60085c87614f1a5c8c40225f65e369d3d79c2d3"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_calibrated\\task2a_calibrated_summary.md": {
+      "size_bytes": 12500,
+      "sha256": "4a15a5ffd29e0d877f8869bb95bd700ffc25a46f35cad51d48dcd1cfa36b6e41"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_calibrated\\training_curve.png": {
+      "size_bytes": 67487,
+      "sha256": "34e527ab5eca9ab3bd81060f9dd8b8f043e4814f7ab48be86058687adb5abd2b"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_calibrated\\zero_axis_audit.csv": {
+      "size_bytes": 244,
+      "sha256": "1dd3708e8c9568d044c842454669e9d06228405099a12a818511e7d3b06b8bc4"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_calibrated\\background_autoencoder\\best_model.pth": {
+      "size_bytes": 573237,
+      "sha256": "60c78a9cff7fbfa60b140597a9dfdfb843e219b967b0fba1cbf4d253352c8daf"
+    },
+    "F:\\Micro-C\\project\\outputs\\task2a_calibrated\\background_autoencoder\\training_history.csv": {
+      "size_bytes": 5173,
+      "sha256": "2a585b4a0909a6891fe5278e1eebd53b2a109b9ed9990ab4f375b5a76b133860"
+    },
+    "F:\\Micro-C\\project\\data\\task2\\background_split_calibrated.csv": {
+      "size_bytes": 316467,
+      "sha256": "5fe596d172c38cfd6c0fe15c66d4c9753f10a9a1a97bc8530d4bf32e2e4918e2"
+    }
+  }
+}

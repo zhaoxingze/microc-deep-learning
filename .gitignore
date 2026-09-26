@@ -54,6 +54,8 @@ micro-c数据/
 *.pth
 *.pt
 *.ckpt
+*.pkl
+*.joblib
 
 # Generated data products and internal execution state
 project/data/processed/
@@ -61,13 +63,25 @@ project/.superpowers/
 results/
 figures/
 
-# Generated outputs: retain only compact, reviewable Task 1 summaries
-project/outputs/*
-!project/outputs/task1/
-project/outputs/task1/*
-!project/outputs/task1/task1_summary.md
-!project/outputs/task1/task1_manifest.json
-!project/outputs/task1/input_comparison.csv
-!project/outputs/task1/split_summary.csv
-!project/outputs/task1/split_diagnostics.json
-!project/outputs/task1/replicate_consistency_summary.csv
+# Publish formal experiment tables, provenance, reports and heatmaps only.
+# Smoke runs, logs, weights and numerical caches remain local.
+project/outputs/**
+!project/outputs/**/
+!project/outputs/task*/**/*.csv
+!project/outputs/task*/**/*.json
+!project/outputs/task*/**/*.md
+!project/outputs/task*/**/*.png
+!project/outputs/qc/**/*.csv
+!project/outputs/qc/**/*.json
+!project/outputs/qc/**/*.md
+!project/outputs/qc/**/*.png
+
+# Dependency links, duplicate archive and unrelated local presentation repair.
+/node_modules/
+/node_modules
+/project.zip
+/.superpowers/
+/.codex-ppt-repair/
+/.codex-ppt-repair-diagnostics/
+/output/
+/tools/

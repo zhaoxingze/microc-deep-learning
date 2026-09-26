@@ -1,0 +1,5 @@
+﻿class,n_samples,shape_valid_count,all_zero_count,zero_axis_sample_count,nan_count,inf_count,padded_count,symmetry_error_mean,symmetry_error_max,raw_min,raw_q25,raw_median,raw_q75,raw_q99,raw_max,raw_mean,raw_zero_fraction
+CHIN,250,250,0,43,0,0,0,0.0,0.0,0.0,2.0,6.0,18.0,813.0,1904.0,67.99858203125,0.087494140625
+OPCID,68,68,0,1,0,0,0,0.0,0.0,0.0,7.0,16.0,49.0,1032.0,1829.0,104.18684297449448,0.012989717371323529
+CHID,26,26,0,7,0,0,0,0.0,0.0,0.0,3.0,8.0,20.0,775.0,1153.0,63.42410043569711,0.11770395132211539
+ALL,344,344,0,51,0,0,0,0.0,0.0,0.0,3.0,8.0,24.0,869.0,1904.0,74.8063297715298,0.07504982172056686

@@ -1,0 +1,51 @@
+{
+  "version": "Task2A-Final-independent-six-channel-v1",
+  "purpose": "high-recall proposal generation; no novelty determination",
+  "scales": [
+    {
+      "scale": "small",
+      "window_bp": 3200,
+      "step_bp": 400,
+      "target_bin_size": 100
+    },
+    {
+      "scale": "medium",
+      "window_bp": 6400,
+      "step_bp": 800,
+      "target_bin_size": 100
+    },
+    {
+      "scale": "large",
+      "window_bp": 12800,
+      "step_bp": 1600,
+      "target_bin_size": 100
+    }
+  ],
+  "channels": [
+    "small_density",
+    "small_shape",
+    "medium_density",
+    "medium_shape",
+    "large_density",
+    "large_shape"
+  ],
+  "channel_p": "sqrt(rep1_empirical_p * rep2_empirical_p); equivalent to mean replicate -log10(p)",
+  "proposal_threshold": 0.05,
+  "channel_nms": "per channel; ascending p; center distance strictly < window_bp/2 suppressed",
+  "cross_channel_merge": "transitive connected components of positive interval overlap",
+  "representative_tie_break": [
+    "lowest empirical p",
+    "highest replicate-min anomaly",
+    "chrom/start/end/window_id/channel ascending"
+  ],
+  "known_labels_used_for_selection": false,
+  "known_recall_used_as_performance_gate": false,
+  "source_task2a_manifest_sha256": "0b090fb5b6e89dec3b542c1118e52d4303224de96d5fcd7f88d947361fb4235b",
+  "source_score_sha256": {
+    "small": "05d3b7245f9615fda8884b1de1efec60099834136ebd0996bddbc8af67f7502c",
+    "medium": "48ce62de1d6ea76df1bdf03c6e34653565697d4049eaa66c5d2341c63175be13",
+    "large": "7da72bfb36eb07ad43e11bd7ae3bb7fd8aa1dd989bfd0d42f886ce97075d6322"
+  },
+  "proposal_code_sha256": "6d9a0009b15aca21cc3ddaac576867e00eed2420ec9ea727479d981b9b5259f5",
+  "seed": 20260920
+}
